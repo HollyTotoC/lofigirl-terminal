@@ -5,7 +5,7 @@ This module handles fetching real streaming URLs from YouTube live streams
 using yt-dlp. It extracts the direct stream URL that can be played by mpv.
 """
 
-import subprocess
+import subprocess  # nosec B404 - subprocess is needed for yt-dlp integration
 from dataclasses import dataclass
 from typing import Optional
 
@@ -211,7 +211,8 @@ class YouTubeFetcher:
         """
         try:
             # Safe: command is built from a list, not shell=True
-            result = subprocess.run(  # nosec B603
+            # yt-dlp is a standard tool installed by the user
+            result = subprocess.run(  # nosec B603 B607
                 ["yt-dlp", "--version"],
                 capture_output=True,
                 timeout=5,

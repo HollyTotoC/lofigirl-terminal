@@ -57,10 +57,10 @@ class LofiAsciiArt(Static):
 
     def on_mount(self) -> None:
         """Set up animation when mounted."""
-        self.set_interval(2.0, self.animate)
+        self.set_interval(2.0, self.update_animation)
 
-    def animate(self) -> None:
-        """Animate the ASCII art (simple frame alternation)."""
+    def update_animation(self) -> None:
+        """Update the ASCII art animation (simple frame alternation)."""
         self.frame = (self.frame + 1) % 2
         self.update(self.render_art())
 
@@ -93,10 +93,10 @@ class WaveformDisplay(Static):
 
     def on_mount(self) -> None:
         """Set up animation when mounted."""
-        self.set_interval(0.1, self.animate)
+        self.set_interval(0.1, self.update_animation)
 
-    def animate(self) -> None:
-        """Animate the waveform."""
+    def update_animation(self) -> None:
+        """Update the waveform animation."""
         self.frame += 1
         self.update(self.render_waveform())
 
@@ -424,7 +424,7 @@ class LofiGirlApp(App):
             logger.exception(f"Failed to open browser: {e}")
             self.notify(f"Failed to open browser: {e}", severity="error")
 
-    def action_quit(self) -> None:
+    async def action_quit(self) -> None:
         """Quit the application."""
         if self.player:
             self.player.cleanup()

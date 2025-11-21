@@ -404,7 +404,8 @@ class MPVPlayer:
         if self._mpv:
             try:
                 self._mpv.terminate()
-            except Exception:
+            except Exception:  # nosec B110
+                # Intentionally ignore errors during cleanup
                 pass
             self._mpv = None
 

@@ -71,7 +71,7 @@ class TestConfig:
 
     def test_reload_config(self) -> None:
         """Test that reload_config creates a new instance."""
-        config1 = get_config()
+        get_config()  # Get initial config
         os.environ["LOG_LEVEL"] = "DEBUG"
         config2 = reload_config()
         assert config2.log_level == "DEBUG"
