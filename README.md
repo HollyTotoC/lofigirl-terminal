@@ -2,6 +2,7 @@
 
 <div align="center">
 
+[![CI](https://github.com/HollyTotoC/lofigirl-terminal/workflows/CI/badge.svg)](https://github.com/HollyTotoC/lofigirl-terminal/actions)
 [![Node.js 14+](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
