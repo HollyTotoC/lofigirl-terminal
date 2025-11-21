@@ -1,6 +1,6 @@
 /**
  * Terminal User Interface for LofiGirl Terminal
- * Rice-style compact UI with ASCII art
+ * Modern, clean design inspired by bottom with Catppuccin Mocha theme
  */
 
 import blessed from 'blessed';
@@ -9,32 +9,75 @@ import { getStationManager } from './stations';
 import { PlayerState } from '../types';
 import { enableTUIMode, disableTUIMode } from '../logger';
 
-// ASCII Art for lofi vibes
-const LOFI_ASCII = `
-     ▄▄▄▄▄▄▄▄▄
-    █░░░░░░░░█
-    █░ ◉  ◉ ░█   ♪♫♪
-    █░   ▿   ░█
-    █░ ╰───╯ ░█
-     ▀▀▀▀▀▀▀▀▀
-`;
+// ═══════════════════════════════════════════════════════════════════════════
+// CATPPUCCIN MOCHA COLOR PALETTE
+// ═══════════════════════════════════════════════════════════════════════════
+const CATPPUCCIN_MOCHA = {
+  rosewater: '#f5e0dc',
+  flamingo: '#f2cdcd',
+  pink: '#f5c2e7',
+  mauve: '#cba6f7',
+  red: '#f38ba8',
+  maroon: '#eba0ac',
+  peach: '#fab387',
+  yellow: '#f9e2af',
+  green: '#a6e3a1',
+  teal: '#94e2d5',
+  sky: '#89dceb',
+  sapphire: '#74c7ec',
+  blue: '#89b4fa',
+  lavender: '#b4befe',
+  text: '#cdd6f4',
+  subtext1: '#bac2de',
+  subtext0: '#a6adc8',
+  overlay2: '#9399b2',
+  overlay1: '#7f849c',
+  overlay0: '#6c7086',
+  surface2: '#585b70',
+  surface1: '#45475a',
+  surface0: '#313244',
+  base: '#1e1e2e',
+  mantle: '#181825',
+  crust: '#11111b',
+};
 
-const WAVE_FRAMES = [
-  '▁▂▃▄▅▆▇█',
-  '▂▃▄▅▆▇█▁',
-  '▃▄▅▆▇█▁▂',
-  '▄▅▆▇█▁▂▃',
-  '▅▆▇█▁▂▃▄',
-  '▆▇█▁▂▃▄▅',
-  '▇█▁▂▃▄▅▆',
-  '█▁▂▃▄▅▆▇',
-];
+// Blessed color mapping (closest matches)
+const THEME = {
+  bg: 'black', // Closest to base
+  fg: 'white', // Closest to text
+  primary: 'magenta', // mauve
+  secondary: 'cyan', // sapphire
+  success: 'green', // green
+  warning: 'yellow', // yellow
+  error: 'red', // red
+  accent: 'blue', // lavender
+  muted: 'gray', // overlay0
+  border: '#45475a', // surface1
+};
 
+// ═══════════════════════════════════════════════════════════════════════════
+// WAVE VISUALIZER
+// ═══════════════════════════════════════════════════════════════════════════
+const WAVE_BARS = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
+
+function generateWave(width: number, offset: number): string {
+  const bars: string[] = [];
+  for (let i = 0; i < width; i++) {
+    const height = Math.floor(
+      4 + 3 * Math.sin((i + offset) * 0.3) + 2 * Math.cos((i + offset) * 0.5)
+    );
+    const barIndex = Math.max(0, Math.min(WAVE_BARS.length - 1, height));
+    bars.push(WAVE_BARS[barIndex]);
+  }
+  return bars.join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MAIN TUI
+// ═══════════════════════════════════════════════════════════════════════════
 export async function runTUI(): Promise<void> {
-  // Enable TUI mode to suppress console logs
   enableTUIMode();
 
-  // Create screen
   const screen = blessed.screen({
     smartCSR: true,
     title: 'LofiGirl Terminal',
@@ -44,349 +87,385 @@ export async function runTUI(): Promise<void> {
   const stationManager = getStationManager();
   const player = getPlayer();
   const stations = stationManager.getAllStations();
+
   if (stations.length === 0) {
-    // Show error message in TUI and exit
-    const errorBox = blessed.message({
-      top: 'center',
-      left: 'center',
-      width: '50%',
-      height: 5,
-      tags: true,
-      border: {
-        type: 'line',
-      },
-      style: {
-        fg: 'red',
-        bg: 'black',
-        border: {
-          fg: 'red',
-        },
-      },
-    });
-    screen.append(errorBox);
-    errorBox.display(
-      'No stations are available.\nPlease add stations and try again.',
-      0,
-      () => {
-        screen.destroy();
-        disableTUIMode();
-        process.exit(1);
-      }
-    );
+    showError(screen, 'No stations available.\nPlease add stations and try again.');
     return;
   }
+
   let currentStationIndex = 0;
-  let waveFrame = 0;
+  let waveOffset = 0;
   let lastPlayerState = PlayerState.STOPPED;
   let updateInterval: NodeJS.Timeout | null = null;
 
-  // ╔══════════════════════════════════════╗
-  // ║  COMPACT RICE-STYLE LAYOUT           ║
-  // ╚══════════════════════════════════════╝
+  // ╭─────────────────────────────────────────────────────────────────────╮
+  // │                         LAYOUT STRUCTURE                            │
+  // ╰─────────────────────────────────────────────────────────────────────╯
 
-  // Top bar with ASCII art and title (compact)
-  const headerBox = blessed.box({
+  // Title Bar (minimal, single line)
+  const titleBar = blessed.box({
     top: 0,
     left: 0,
     width: '100%',
+    height: 1,
+    tags: true,
+    style: {
+      fg: THEME.primary,
+      bg: THEME.bg,
+    },
+  });
+
+  // Now Playing Box (left side, compact)
+  const nowPlayingBox = blessed.box({
+    top: 1,
+    left: 0,
+    width: '50%',
     height: 8,
     tags: true,
     border: {
       type: 'line',
     },
     style: {
-      fg: 'magenta',
-      bg: 'black',
+      fg: THEME.fg,
+      bg: THEME.bg,
       border: {
-        fg: 'magenta',
+        fg: THEME.border,
       },
     },
+    label: ' Now Playing ',
   });
 
-  // Player info - compact single box
-  const playerBox = blessed.box({
-    top: 8,
-    left: 0,
-    width: '100%',
-    height: 7,
+  // Visualizer Box (right side)
+  const visualizerBox = blessed.box({
+    top: 1,
+    left: '50%',
+    width: '50%',
+    height: 8,
     tags: true,
     border: {
       type: 'line',
     },
     style: {
-      fg: 'cyan',
-      bg: 'black',
+      fg: THEME.secondary,
+      bg: THEME.bg,
       border: {
-        fg: 'cyan',
+        fg: THEME.border,
       },
     },
+    label: ' Visualizer ',
   });
 
-  // Controls - single line compact
-  const controlsBox = blessed.box({
-    top: 15,
-    left: 0,
-    width: '100%',
-    height: 3,
-    tags: true,
-    border: {
-      type: 'line',
-    },
-    style: {
-      fg: 'green',
-      bg: 'black',
-      border: {
-        fg: 'green',
-      },
-    },
-  });
-
-  // Logs - minimal, at bottom
-  const logBox = blessed.log({
-    top: 18,
+  // Station List Box
+  const stationListBox = blessed.list({
+    top: 9,
     left: 0,
     width: '100%',
     height: 'shrink',
     tags: true,
-    scrollable: true,
-    alwaysScroll: true,
-    mouse: true,
-    keys: true,
-    vi: true,
-    scrollbar: {
-      ch: '█',
-      style: {
-        fg: 'magenta',
-        bg: 'black',
-      },
-    },
     border: {
       type: 'line',
     },
     style: {
-      fg: 'magenta',
-      bg: 'black',
+      fg: THEME.fg,
+      bg: THEME.bg,
       border: {
-        fg: 'magenta',
+        fg: THEME.border,
+      },
+      selected: {
+        fg: THEME.bg,
+        bg: THEME.primary,
+        bold: true,
+      },
+    },
+    label: ` Stations (${currentStationIndex + 1}/${stations.length}) `,
+    mouse: true,
+    keys: true,
+    vi: true,
+    scrollbar: {
+      ch: '│',
+      style: {
+        fg: THEME.primary,
       },
     },
   });
 
-  screen.append(headerBox);
-  screen.append(playerBox);
-  screen.append(controlsBox);
-  screen.append(logBox);
+  // Controls Bar (bottom, minimal)
+  const controlsBar = blessed.box({
+    bottom: 0,
+    left: 0,
+    width: '100%',
+    height: 1,
+    tags: true,
+    style: {
+      fg: THEME.muted,
+      bg: THEME.bg,
+    },
+  });
 
-  /**
-   * Update header with ASCII art and title
-   */
-  function updateHeader(): void {
-    const title = '{center}{bold}{magenta-fg}♪ LofiGirl Terminal ♪{/}{/bold}{/center}';
-    const subtitle = '{center}{white-fg}chill beats to code/relax to{/}{/center}';
+  screen.append(titleBar);
+  screen.append(nowPlayingBox);
+  screen.append(visualizerBox);
+  screen.append(stationListBox);
+  screen.append(controlsBar);
 
-    headerBox.setContent(`${title}\n${subtitle}\n${LOFI_ASCII}`);
-    screen.render();
+  // ╭─────────────────────────────────────────────────────────────────────╮
+  // │                         UPDATE FUNCTIONS                            │
+  // ╰─────────────────────────────────────────────────────────────────────╯
+
+  function updateTitleBar(): void {
+    titleBar.setContent(
+      `{center}{bold}{${THEME.primary}-fg}♪ LofiGirl Terminal{/} {${THEME.muted}-fg}│ chill beats to code/relax to{/}{/bold}{/center}`
+    );
   }
 
-  /**
-   * Update player info display (compact)
-   */
-  function updatePlayerInfo(): void {
-    if (stations.length === 0) {
-      playerBox.setContent('{center}{red-fg}No stations available.{/red-fg}{/center}');
-      screen.render();
-      return;
-    }
+  function updateNowPlaying(): void {
+    if (stations.length === 0) return;
+
     const station = stations[currentStationIndex];
     const state = player.getState();
     const volume = player.getVolume();
     const isMuted = player.isMuted();
 
-    // State icon with color
-    let stateDisplay = '';
+    // State icon
+    let stateIcon = '';
+    let stateColor = THEME.muted;
     if (state === PlayerState.PLAYING) {
-      stateDisplay = '{green-fg}▶ PLAYING{/}';
+      stateIcon = '▶';
+      stateColor = THEME.success;
     } else if (state === PlayerState.PAUSED) {
-      stateDisplay = '{yellow-fg}⏸ PAUSED{/}';
+      stateIcon = '⏸';
+      stateColor = THEME.warning;
     } else {
-      stateDisplay = '{white-fg}⏹ STOPPED{/}';
+      stateIcon = '⏹';
+      stateColor = THEME.muted;
     }
 
-    // Volume bar
+    // Volume bar (10 blocks)
     const volBars = Math.max(0, Math.min(10, Math.floor(volume / 10)));
     const volBar = '█'.repeat(volBars) + '░'.repeat(10 - volBars);
     const volDisplay = isMuted
-      ? '{red-fg}🔇 MUTED{/}'
-      : `{cyan-fg}🔊 ${volBar}{/} {bold}${volume}%{/bold}`;
-
-    // Wave animation
-    const wave = state === PlayerState.PLAYING ? WAVE_FRAMES[waveFrame] : '▁▁▁▁▁▁▁▁';
+      ? `{${THEME.error}-fg}🔇 MUTED{/}`
+      : `{${THEME.secondary}-fg}${volBar}{/} {bold}${volume}%{/bold}`;
 
     const content = `
-{center}{bold}{magenta-fg}╭─────────────────────────────────────────╮{/}{/bold}{/center}
-{center}{bold}{magenta-fg}${station.name}{/}{/bold}{/center}
-{center}{white-fg}${station.genre} • ${station.description}{/}{/center}
-{center}${stateDisplay}  │  ${volDisplay}{/center}
-{center}{cyan-fg}${wave}{/}{/center}`;
+  {bold}{${THEME.primary}-fg}${station.name}{/}{/bold}
+  {${THEME.muted}-fg}${station.genre} • ${station.description.substring(0, 40)}...{/}
 
-    playerBox.setContent(content);
-    screen.render();
+  {${stateColor}-fg}${stateIcon} ${state.toUpperCase()}{/}  │  🔊 ${volDisplay}
+`;
+
+    nowPlayingBox.setContent(content);
   }
 
-  /**
-   * Update controls display (compact)
-   */
-  function updateControls(): void {
-    const controls =
-      '{center}{green-fg}[SPACE]{/} Play/Pause  {green-fg}[N]{/} Next  {green-fg}[P]{/} Prev  {green-fg}[M]{/} Mute  {green-fg}[+/-]{/} Vol  {red-fg}[Q]{/} Quit{/center}';
-    controlsBox.setContent(controls);
-    screen.render();
-  }
+  function updateVisualizer(): void {
+    const state = player.getState();
 
-  /**
-   * Log message to log box (with colors)
-   */
-  function log(
-    message: string,
-    type: 'info' | 'success' | 'warn' | 'error' = 'info'
-  ): void {
-    const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false });
-    let color = 'magenta';
+    if (state === PlayerState.PLAYING) {
+      const width = (typeof visualizerBox.width === 'number' ? visualizerBox.width : 80) - 4;
+      const wave1 = generateWave(width, waveOffset);
+      const wave2 = generateWave(width, waveOffset + 10);
+      const wave3 = generateWave(width, waveOffset + 20);
 
-    switch (type) {
-      case 'success':
-        color = 'green';
-        break;
-      case 'warn':
-        color = 'yellow';
-        break;
-      case 'error':
-        color = 'red';
-        break;
+      const content = `
+  {${THEME.secondary}-fg}${wave1}{/}
+  {${THEME.accent}-fg}${wave2}{/}
+  {${THEME.primary}-fg}${wave3}{/}
+
+  {center}{${THEME.muted}-fg}♪ Playing... ♪{/}{/center}
+`;
+      visualizerBox.setContent(content);
+    } else {
+      const width = (typeof visualizerBox.width === 'number' ? visualizerBox.width : 80) - 4;
+      const flatLine = '▁'.repeat(width);
+
+      visualizerBox.setContent(`
+  {${THEME.muted}-fg}${flatLine}{/}
+  {${THEME.muted}-fg}${flatLine}{/}
+  {${THEME.muted}-fg}${flatLine}{/}
+
+  {center}{${THEME.muted}-fg}${state === PlayerState.PAUSED ? '⏸ Paused' : '⏹ Stopped'}{/}{/center}
+`);
     }
-
-    logBox.log(`{white-fg}${timestamp}{/} {${color}-fg}${message}{/}`);
   }
 
-  /**
-   * Load and play current station
-   */
+  function updateStationList(): void {
+    const items = stations.map((station, index) => {
+      const prefix = index === currentStationIndex ? '►' : ' ';
+      const name = station.name.padEnd(25);
+      return `{${THEME.fg}-fg}${prefix} {bold}${station.id.padEnd(20)}{/bold} ${name}{/}`;
+    });
+
+    stationListBox.setItems(items);
+    stationListBox.select(currentStationIndex);
+    stationListBox.setLabel(` Stations (${currentStationIndex + 1}/${stations.length}) `);
+  }
+
+  function updateControlsBar(): void {
+    const controls = [
+      `{${THEME.accent}-fg}[SPACE]{/} Play/Pause`,
+      `{${THEME.accent}-fg}[↑↓]{/} Select`,
+      `{${THEME.accent}-fg}[ENTER]{/} Play`,
+      `{${THEME.accent}-fg}[M]{/} Mute`,
+      `{${THEME.accent}-fg}[+/-]{/} Volume`,
+      `{${THEME.error}-fg}[Q]{/} Quit`,
+    ].join(' {${THEME.muted}-fg}│{/} ');
+
+    controlsBar.setContent(` ${controls}`);
+  }
+
+  function renderAll(): void {
+    updateTitleBar();
+    updateNowPlaying();
+    updateVisualizer();
+    updateStationList();
+    updateControlsBar();
+    screen.render();
+  }
+
+  // ╭─────────────────────────────────────────────────────────────────────╮
+  // │                         PLAYER CONTROLS                             │
+  // ╰─────────────────────────────────────────────────────────────────────╯
+
   async function playCurrentStation(): Promise<void> {
-    if (!stations || stations.length === 0) {
-      log('No stations available to play.', 'error');
-      return;
-    }
+    if (!stations || stations.length === 0) return;
     const station = stations[currentStationIndex];
+
     try {
-      log(`Loading ${station.name}...`, 'info');
       await player.loadStation(station);
       await player.play();
-      updateHeader();
-      updatePlayerInfo();
-      log(`♪ Now playing: ${station.name}`, 'success');
+      renderAll();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      log(`Error: ${errorMessage}`, 'error');
+      // Error handling would go here
     }
   }
 
-  /**
-   * Next station
-   */
   async function nextStation(): Promise<void> {
     currentStationIndex = (currentStationIndex + 1) % stations.length;
     await player.stop();
     await playCurrentStation();
   }
 
-  /**
-   * Previous station
-   */
   async function previousStation(): Promise<void> {
     currentStationIndex = (currentStationIndex - 1 + stations.length) % stations.length;
     await player.stop();
     await playCurrentStation();
   }
 
-  // Initialize UI
-  updateHeader();
-  updatePlayerInfo();
-  updateControls();
-  log('Welcome to LofiGirl Terminal! ♪', 'success');
-  log('Press SPACE to start playing...', 'info');
-
-  // ╔══════════════════════════════════════╗
-  // ║  KEYBOARD CONTROLS                   ║
-  // ╚══════════════════════════════════════╝
+  // ╭─────────────────────────────────────────────────────────────────────╮
+  // │                         KEYBOARD BINDINGS                           │
+  // ╰─────────────────────────────────────────────────────────────────────╯
 
   screen.key(['space'], async () => {
     if (player.getState() === PlayerState.STOPPED) {
       await playCurrentStation();
     } else {
       await player.togglePause();
-      updatePlayerInfo();
-      log(player.isPlaying() ? '▶ Resumed' : '⏸ Paused', 'warn');
+      renderAll();
     }
   });
 
+  screen.key(['up', 'k'], () => {
+    currentStationIndex = (currentStationIndex - 1 + stations.length) % stations.length;
+    updateStationList();
+    screen.render();
+  });
+
+  screen.key(['down', 'j'], () => {
+    currentStationIndex = (currentStationIndex + 1) % stations.length;
+    updateStationList();
+    screen.render();
+  });
+
+  screen.key(['enter'], async () => {
+    await player.stop();
+    await playCurrentStation();
+  });
+
   screen.key(['n'], async () => {
-    log('→ Next station', 'info');
     await nextStation();
   });
 
   screen.key(['p'], async () => {
-    log('← Previous station', 'info');
     await previousStation();
   });
 
   screen.key(['m'], async () => {
     await player.toggleMute();
-    log(player.isMuted() ? '🔇 Muted' : '🔊 Unmuted', 'warn');
-    updatePlayerInfo();
+    renderAll();
   });
 
   screen.key(['+', '='], async () => {
     await player.volumeUp(5);
-    updatePlayerInfo();
+    renderAll();
   });
 
   screen.key(['-', '_'], async () => {
     await player.volumeDown(5);
-    updatePlayerInfo();
+    renderAll();
   });
 
   screen.key(['q', 'C-c'], async () => {
-    log('Shutting down... Goodbye! ♪', 'error');
     if (updateInterval) {
       clearInterval(updateInterval);
     }
     await player.stop();
     await player.cleanup();
+    screen.destroy();
     disableTUIMode();
     process.exit(0);
   });
 
-  // ╔══════════════════════════════════════╗
-  // ║  ANIMATIONS & UPDATES                ║
-  // ╚══════════════════════════════════════╝
+  // ╭─────────────────────────────────────────────────────────────────────╮
+  // │                         ANIMATION LOOP                              │
+  // ╰─────────────────────────────────────────────────────────────────────╯
 
-  // Update wave animation and status - optimized to reduce unnecessary re-renders
   updateInterval = setInterval(() => {
     const currentState = player.getState();
     const stateChanged = currentState !== lastPlayerState;
 
-    // Only update wave animation when playing
     if (currentState === PlayerState.PLAYING) {
-      waveFrame = (waveFrame + 1) % WAVE_FRAMES.length;
-      // Always update during playback for smooth animation
-      updatePlayerInfo();
+      waveOffset = (waveOffset + 1) % 100;
+      updateVisualizer();
+      screen.render();
     } else if (stateChanged) {
-      // Update only when state changes (stopped/paused/etc)
-      updatePlayerInfo();
+      updateVisualizer();
+      updateNowPlaying();
+      screen.render();
     }
 
     lastPlayerState = currentState;
-  }, 200);
+  }, 100);
 
-  screen.render();
+  // Initial render
+  renderAll();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HELPER: ERROR DIALOG
+// ═══════════════════════════════════════════════════════════════════════════
+function showError(screen: blessed.Widgets.Screen, message: string): void {
+  const errorBox = blessed.message({
+    top: 'center',
+    left: 'center',
+    width: '50%',
+    height: 7,
+    tags: true,
+    border: {
+      type: 'line',
+    },
+    style: {
+      fg: THEME.error,
+      bg: THEME.bg,
+      border: {
+        fg: THEME.error,
+      },
+    },
+  });
+
+  screen.append(errorBox);
+  errorBox.display(`{center}{bold}Error{/bold}\n\n${message}{/center}`, 0, () => {
+    screen.destroy();
+    disableTUIMode();
+    process.exit(1);
+  });
 }
