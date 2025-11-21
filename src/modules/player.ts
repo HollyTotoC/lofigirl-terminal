@@ -6,6 +6,7 @@ import mpv from 'node-mpv';
 import { Station, PlayerState } from '../types';
 import { createLogger } from '../logger';
 import { getConfig } from '../config';
+import { checkYouTubeExtractor, checkMPV } from '../utils/dependencies';
 
 const logger = createLogger('player');
 const config = getConfig();
@@ -41,11 +42,35 @@ export class MPVPlayer {
     try {
       logger.debug('Initializing mpv instance...');
 
+      // Check if MPV is available
+      if (!checkMPV()) {
+        throw new Error(
+          'MPV media player not found. Please install MPV to use LofiGirl Terminal.\n' +
+            'Installation: https://mpv.io/installation/'
+        );
+      }
+
+      // Check if YouTube extractor is available (for YouTube URLs)
+      const ytCheck = checkYouTubeExtractor();
+      if (!ytCheck.available) {
+        logger.warn(
+          'yt-dlp/youtube-dl not found. YouTube streaming may not work. ' +
+            'Install yt-dlp for YouTube support: pip install yt-dlp'
+        );
+      } else {
+        logger.debug(`Using YouTube extractor: ${ytCheck.extractor}`);
+      }
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mpvOptions: any = {
         audio_only: !this.isVideoMode,
         time_update: 1,
         verbose: config.debugMode,
+        // Enable YouTube support via yt-dlp/youtube-dl
+        'ytdl': true,
+        'ytdl-format': 'bestaudio',
+        // Script options for better YouTube streaming
+        'script-opts': 'ytdl_hook-ytdl_path=yt-dlp',
       };
 
       // Try different socket paths for cross-platform compatibility
@@ -82,7 +107,7 @@ export class MPVPlayer {
 
       logger.info('MPV instance initialized successfully');
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
       logger.error(`Failed to initialize mpv: ${errorMessage}`);
       throw new Error(`Failed to initialize mpv: ${errorMessage}`);
     }
@@ -134,10 +159,10 @@ export class MPVPlayer {
         await this.mpvPlayer.load(this.currentStation.url);
         this.updateState(PlayerState.PLAYING);
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
+        const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
         logger.error(`Failed to start playback: ${errorMessage}`);
         this.updateState(PlayerState.ERROR);
-        throw error;
+        throw new Error(`Failed to start playback: ${errorMessage}`);
       }
     }
   }

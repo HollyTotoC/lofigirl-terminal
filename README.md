@@ -75,8 +75,11 @@ Native support for PowerShell (Windows), Terminal (Mac/Linux)! 🎧
 
 - **Node.js 16+** (LTS recommended) - [Download](https://nodejs.org/)
 - **npm** (comes with Node.js)
-- **MPV media player** (for audio playback)
+- **MPV media player** (for audio playback) - [Download](https://mpv.io/installation/)
+- **yt-dlp** or **youtube-dl** (for YouTube streaming) - [Download](https://github.com/yt-dlp/yt-dlp)
 - **Git**
+
+> **Note**: yt-dlp is required for playing YouTube streams. Without it, YouTube URLs won't work.
 
 ### 🪟 Windows (PowerShell)
 
@@ -93,6 +96,13 @@ This will:
 - ✅ Install npm dependencies
 - ✅ Build TypeScript
 - ✅ Create launcher in PATH
+
+**Install yt-dlp for YouTube streaming:**
+```powershell
+choco install yt-dlp
+# OR
+pip install yt-dlp
+```
 
 **Then simply run:**
 ```powershell
@@ -115,6 +125,20 @@ This will:
 - ✅ Build TypeScript
 - ✅ Create launcher at `~/.local/bin/lofigirl`
 
+**Install yt-dlp for YouTube streaming:**
+```bash
+# macOS
+brew install yt-dlp
+
+# Ubuntu/Debian
+sudo apt install yt-dlp
+# OR
+pip install yt-dlp
+
+# Fedora
+sudo dnf install yt-dlp
+```
+
 **Then simply run:**
 ```bash
 lofigirl tui
@@ -130,12 +154,24 @@ cd lofigirl-terminal
 # Install dependencies
 npm install
 
+# Install yt-dlp (if not already installed)
+pip install yt-dlp
+
 # Build TypeScript
 npm run build
 
 # Run
 node dist/index.js tui
 ```
+
+### ✅ Verify Installation
+
+Check if all dependencies are installed:
+```bash
+lofigirl check
+```
+
+This will show you which dependencies are installed and provide installation instructions for any missing ones.
 
 ### 🗑️ Uninstall
 
