@@ -14,7 +14,7 @@ from rich.table import Table
 from lofigirl_terminal import __version__
 from lofigirl_terminal.config import get_config
 from lofigirl_terminal.logger import setup_logger
-from lofigirl_terminal.modules.player import AudioPlayer, PlayerState
+from lofigirl_terminal.modules.player import AudioPlayer
 from lofigirl_terminal.modules.stations import StationManager
 
 # Initialize console for rich output
@@ -102,7 +102,9 @@ def play(station: Optional[str], volume: Optional[int]) -> None:
 
         console.print("[green]▶ Playing[/green]", style="bold")
         console.print(f"Volume: {player.get_volume()}%")
-        console.print("\n[dim]Note: This is a demo. Actual audio playback not yet implemented.[/dim]")
+        console.print(
+            "\n[dim]Note: This is a demo. Actual audio playback not yet implemented.[/dim]"
+        )
         console.print("[dim]Press Ctrl+C to stop[/dim]")
 
         # TODO: Implement actual playback loop with controls
@@ -151,9 +153,7 @@ def list() -> None:
         )
 
     console.print(table)
-    console.print(
-        f"\n[dim]Use 'lofigirl play --station <ID>' to play a station[/dim]\n"
-    )
+    console.print("\n[dim]Use 'lofigirl play --station <ID>' to play a station[/dim]\n")
 
 
 @cli.command()
@@ -250,11 +250,11 @@ def tui() -> None:
 
     except ImportError as e:
         console.print(
-            f"[red]Error:[/red] Failed to import TUI module",
+            "[red]Error:[/red] Failed to import TUI module",
             style="bold",
         )
         console.print(
-            f"[yellow]Make sure textual is installed:[/yellow] pip install textual"
+            "[yellow]Make sure textual is installed:[/yellow] pip install textual"
         )
         logger.exception(f"Failed to import TUI: {e}")
         sys.exit(1)

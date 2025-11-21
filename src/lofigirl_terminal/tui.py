@@ -6,22 +6,20 @@ lofi radio player with visualizations, controls, and animations.
 """
 
 import webbrowser
-from datetime import datetime, timedelta
-from typing import Optional
+from datetime import datetime
+from typing import Any, Optional
 
 from rich.align import Align
 from rich.panel import Panel
 from rich.text import Text
-from textual import events
 from textual.app import App, ComposeResult
-from textual.containers import Container, Horizontal, Vertical
+from textual.containers import Horizontal
 from textual.reactive import reactive
-from textual.widgets import Button, Footer, Header, Label, ProgressBar, Static
+from textual.widgets import Button, Footer, Header, Static
 
-from lofigirl_terminal.config import get_config
 from lofigirl_terminal.logger import get_logger
 from lofigirl_terminal.modules.player_mpv import MPVPlayer, PlayerState
-from lofigirl_terminal.modules.stations import Station, StationManager
+from lofigirl_terminal.modules.stations import StationManager
 
 logger = get_logger(__name__)
 
@@ -53,7 +51,7 @@ class LofiAsciiArt(Static):
     Animated ASCII art component displaying the Lofi Girl.
     """
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.frame = 0
 
@@ -88,7 +86,7 @@ class WaveformDisplay(Static):
     Audio waveform visualization widget.
     """
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.frame = 0
         self.bars = "▁▂▃▄▅▆▇█"
@@ -104,8 +102,6 @@ class WaveformDisplay(Static):
 
     def render_waveform(self) -> Panel:
         """Render the waveform visualization."""
-        import random
-
         # Generate pseudo-random waveform bars
         width = 40
         wave = ""
@@ -135,17 +131,17 @@ class StationInfo(Static):
     status: reactive[str] = reactive("Stopped")
     time_info: reactive[str] = reactive("00:00")
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
     def render(self) -> Panel:
         """Render station info."""
         content = Text()
-        content.append(f"🎵 Station: ", style="bold cyan")
+        content.append("🎵 Station: ", style="bold cyan")
         content.append(f"{self.station_name}\n", style="bright_white")
-        content.append(f"📡 Status: ", style="bold cyan")
+        content.append("📡 Status: ", style="bold cyan")
         content.append(f"{self.status}\n", style="bright_yellow")
-        content.append(f"⏱️  Time: ", style="bold cyan")
+        content.append("⏱️  Time: ", style="bold cyan")
         content.append(f"{self.time_info}", style="bright_white")
 
         return Panel(
@@ -229,7 +225,7 @@ class LofiGirlApp(App):
         ("q", "quit", "Quit"),
     ]
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.station_manager = StationManager()
         self.player: Optional[MPVPlayer] = None
@@ -404,7 +400,7 @@ class LofiGirlApp(App):
         if self.player:
             self.player.toggle_mute()
             muted = self.player.muted
-            self.notify(f"🔇 Muted" if muted else "🔊 Unmuted")
+            self.notify("🔇 Muted" if muted else "🔊 Unmuted")
 
     def action_volume_up(self) -> None:
         """Increase volume."""

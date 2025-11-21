@@ -7,7 +7,7 @@ using yt-dlp. It extracts the direct stream URL that can be played by mpv.
 
 import subprocess
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import Optional
 
 from lofigirl_terminal.logger import get_logger
 
@@ -107,7 +107,7 @@ class YouTubeFetcher:
 
             if result.returncode == 0 and result.stdout:
                 stream_url = result.stdout.strip()
-                logger.info(f"Successfully fetched stream URL")
+                logger.info("Successfully fetched stream URL")
                 logger.debug(f"Stream URL: {stream_url[:100]}...")
                 return stream_url
             else:

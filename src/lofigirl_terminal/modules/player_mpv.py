@@ -6,8 +6,6 @@ It supports YouTube streams via yt-dlp integration and provides full
 playback control.
 """
 
-import threading
-import time
 from enum import Enum
 from typing import Callable, Optional
 
@@ -89,7 +87,7 @@ class MPVPlayer:
 
         logger.info(f"MPVPlayer initialized (video_mode={video_mode})")
 
-    def _init_mpv(self) -> None:
+    def _init_mpv(self) -> None:  # noqa: C901
         """
         Initialize the mpv player instance.
 
@@ -362,8 +360,9 @@ class MPVPlayer:
         """
         if self._mpv and self.state in (PlayerState.PLAYING, PlayerState.PAUSED):
             try:
-                return self._mpv.time_pos
-            except:
+                pos = self._mpv.time_pos
+                return float(pos) if pos is not None else None
+            except Exception:
                 return None
         return None
 
@@ -376,8 +375,9 @@ class MPVPlayer:
         """
         if self._mpv and self.state in (PlayerState.PLAYING, PlayerState.PAUSED):
             try:
-                return self._mpv.duration
-            except:
+                dur = self._mpv.duration
+                return float(dur) if dur is not None else None
+            except Exception:
                 return None
         return None
 
@@ -404,7 +404,7 @@ class MPVPlayer:
         if self._mpv:
             try:
                 self._mpv.terminate()
-            except:
+            except Exception:
                 pass
             self._mpv = None
 

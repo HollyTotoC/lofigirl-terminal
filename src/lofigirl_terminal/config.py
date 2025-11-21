@@ -5,9 +5,8 @@ This module handles loading and validating configuration from environment
 variables and .env files using Pydantic for type safety and validation.
 """
 
-import os
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -150,7 +149,7 @@ class Config(BaseSettings):
 
 
 # Global configuration instance
-_config: Config | None = None
+_config: Optional[Config] = None
 
 
 def get_config() -> Config:
