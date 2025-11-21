@@ -7,7 +7,7 @@ import blessed from 'blessed';
 import { getPlayer } from './player';
 import { getStationManager } from './stations';
 import { PlayerState } from '../types';
-import { enableTUIMode } from '../logger';
+import { enableTUIMode, disableTUIMode } from '../logger';
 
 // ASCII Art for lofi vibes
 const LOFI_ASCII = `
@@ -64,10 +64,14 @@ export async function runTUI(): Promise<void> {
       },
     });
     screen.append(errorBox);
-    errorBox.display('No stations are available.\nPlease add stations and try again.', 0, () => {
-      screen.destroy();
-      process.exit(1);
-    });
+    errorBox.display(
+      'No stations are available.\nPlease add stations and try again.',
+      0,
+      () => {
+        screen.destroy();
+        process.exit(1);
+      }
+    );
     return;
   }
   let currentStationIndex = 0;
@@ -187,7 +191,9 @@ export async function runTUI(): Promise<void> {
    */
   function updatePlayerInfo(): void {
     if (stations.length === 0) {
-      playerInfoBox.setContent('{center}{red-fg}No stations available.{/red-fg}{/center}');
+      playerInfoBox.setContent(
+        '{center}{red-fg}No stations available.{/red-fg}{/center}'
+      );
       screen.render();
       return;
     }
@@ -353,6 +359,7 @@ export async function runTUI(): Promise<void> {
     log('Shutting down... Goodbye! ♪', 'error');
     await player.stop();
     await player.cleanup();
+    disableTUIMode();
     process.exit(0);
   });
 
