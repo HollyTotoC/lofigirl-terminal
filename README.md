@@ -2,16 +2,33 @@
 
 <div align="center">
 
-[![CI](https://github.com/HollyTotoC/lofigirl-terminal/workflows/CI/badge.svg)](https://github.com/HollyTotoC/lofigirl-terminal/actions)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Node.js 14+](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen.svg)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Cross-Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](https://github.com/HollyTotoC/lofigirl-terminal)
 
-A beautiful terminal-based lofi radio player. Bring relaxing lofi beats to your command line! 🎧
+**Cross-platform terminal-based lofi radio player**
+Native support for PowerShell (Windows), Terminal (Mac/Linux)! 🎧
 
-[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Development](#-development) • [Contributing](#-contributing)
+[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Migration](#-migration-from-python) • [Contributing](#-contributing)
 
 </div>
+
+---
+
+## 🆕 Major Update: Now in Node.js/TypeScript!
+
+**LofiGirl Terminal** has been migrated from Python to **Node.js/TypeScript** for superior cross-platform compatibility!
+
+### Why the Change?
+
+- ✅ **True Cross-Platform**: npm works identically on Windows, Mac, Linux
+- ✅ **Native PowerShell**: First-class Windows PowerShell support
+- ✅ **Simpler Setup**: No virtual environments, no PATH issues
+- ✅ **Universal Install**: `npm install -g` works everywhere
+- ✅ **Better DX**: TypeScript with full type safety
+
+> **Coming from Python version?** See [Migration Guide](#-migration-from-python) below.
 
 ---
 
@@ -23,120 +40,117 @@ A beautiful terminal-based lofi radio player. Bring relaxing lofi beats to your 
 
 #### 🎵 Audio Streaming
 - 🎧 **Real YouTube Streaming**: Direct integration with official LofiGirl channels
-- 📻 **Multiple Stations**: 4 curated lofi stations (hip-hop, sleep, synthwave, jazz)
+- 📻 **Multiple Stations**: 4 curated lofi stations (hip-hop, sleep, jazz, study)
 - 🎛️ **Full Playback Control**: Play, pause, stop, next/previous
 - 🔊 **Volume Management**: Volume control, mute, adjustable levels
 
 #### 🎨 Interactive TUI
-- 🍚 **Rice Style Interface**: Compact, btop-inspired design (default)
-- 🖼️ **Animated ASCII Art**: Beautiful lofi girl animation with 8+ designs
-- 📊 **Audio Waveform**: Real-time audio visualization with smooth bars
-- 🎨 **Multiple Themes**: 6 curated themes (Catppuccin, Dracula, Nord, Tokyo Night, etc.)
-- ⌨️ **Keyboard Shortcuts**: Complete keyboard control (SPACE, N, P, M, +/-, Y, Q)
+- 🖼️ **Blessed TUI**: Cross-platform terminal interface
+- 📊 **Real-time Status**: Live playback status and volume display
+- ⌨️ **Keyboard Shortcuts**: Complete keyboard control (SPACE, N, P, M, +/-, Q)
+- 🎨 **Colorful Display**: Rich colors with chalk and boxen
 - 🖱️ **Mouse Support**: Clickable buttons for all actions
-- ⏱️ **Live Time Tracking**: Real-time playback duration with LIVE indicator
 
 #### 🛠️ Technical
-- ⚙️ **Configurable**: Customize volume, quality, and settings via .env
-- 🔌 **Extensible**: Easy to add custom stations
-- 🧪 **Well Tested**: Comprehensive test suite with high coverage
-- 📦 **One-Line Install**: Automatic setup script like npm
-- 🚀 **Cross-platform**: Works on Linux, macOS, and Windows
-- 🌐 **Browser Integration**: Open current stream in YouTube
+- ⚡ **TypeScript**: Fully typed for better development experience
+- 🌍 **Cross-platform**: Works on Windows, Mac, Linux natively
+- 📦 **npm Package**: Easy global installation
+- 🔌 **MPV Backend**: Professional audio playback
+- ⚙️ **Configurable**: Customize via .env file
 
 ### 🔮 Planned Features
 
 - 💾 Favorites/playlist system
 - 🎵 Local music file support
 - ⏲️ Pomodoro timer integration
-- 🎨 Multiple themes (light/dark variants)
-- 🎥 Video mode (terminal video support)
+- 🎨 Advanced visualizations
+- 🎥 Video mode support
+
+---
 
 ## 🚀 Installation
+
+### Prerequisites
+
+- **Node.js 14+** (LTS recommended) - [Download](https://nodejs.org/)
+- **npm** (comes with Node.js)
+- **MPV media player** (for audio playback)
+- **Git**
 
 ### 🪟 Windows (PowerShell)
 
 Install with a single PowerShell command:
 
 ```powershell
-irm https://raw.githubusercontent.com/HollyTotoC/lofigirl-terminal/main/install.ps1 | iex
-```
-
-**⚠️ Important**: If you get a `libmpv-2.dll` error, see the [Windows Installation Guide](docs/WINDOWS_INSTALL.md) for a quick fix.
-
-**📖 Complete Windows Workflow**: For daily usage, see the [Windows Workflow Guide](docs/WINDOWS_WORKFLOW.md).
-
-<details>
-<summary>Why libmpv-2.dll is needed and how to fix it</summary>
-
-Chocolatey's MPV package includes `mpv.exe` but not `libmpv-2.dll` which Python needs. Quick fix:
-
-1. Download: https://github.com/shinchiro/mpv-winbuild-cmake/releases
-2. Extract and copy `libmpv-2.dll` to MPV's folder
-3. Full guide: [Windows Installation Guide](docs/WINDOWS_INSTALL.md)
-
-</details>
-
-### 🍎 macOS / 🐧 Linux
-
-Install with a single command:
-
-```bash
-curl -sSL https://raw.githubusercontent.com/HollyTotoC/lofigirl-terminal/main/install.sh | bash
+irm https://raw.githubusercontent.com/HollyTotoC/lofigirl-terminal/main/install-node.ps1 | iex
 ```
 
 This will:
-- ✅ Check system requirements (Python, Git, MPV)
-- ✅ Auto-detect Python command (py/python/python3)
-- ✅ Clone/update the repository to `~/.lofigirl-terminal`
-- ✅ Create virtual environment
-- ✅ Install all dependencies
+- ✅ Check Node.js installation
+- ✅ Check/install MPV (via Chocolatey)
+- ✅ Clone repository
+- ✅ Install npm dependencies
+- ✅ Build TypeScript
+- ✅ Create launcher in PATH
+
+**Then simply run:**
+```powershell
+lofigirl tui
+```
+
+### 🍎 macOS / 🐧 Linux
+
+Install with a single bash command:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/HollyTotoC/lofigirl-terminal/main/install-node.sh | bash
+```
+
+This will:
+- ✅ Check Node.js installation
+- ✅ Check/install MPV (via package manager)
+- ✅ Clone repository to `~/.lofigirl-terminal`
+- ✅ Install npm dependencies
+- ✅ Build TypeScript
 - ✅ Create launcher at `~/.local/bin/lofigirl`
-- ✅ Add to PATH automatically
 
 **Then simply run:**
 ```bash
 lofigirl tui
 ```
 
-### 🗑️ Uninstall
-
-To completely remove LofiGirl Terminal:
-
-```bash
-bash ~/.lofigirl-terminal/uninstall.sh
-```
-
 ### 📦 Manual Installation
-
-#### Prerequisites
-
-- Python 3.8 or higher
-- pip (Python package manager)
-- MPV media player (for audio playback)
-
-#### Steps
 
 ```bash
 # Clone the repository
 git clone https://github.com/HollyTotoC/lofigirl-terminal.git
 cd lofigirl-terminal
 
-# Install using make (recommended)
-make setup
+# Install dependencies
+npm install
 
-# Or manually:
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements/dev.txt
-pip install -e .
+# Build TypeScript
+npm run build
+
+# Run
+node dist/index.js tui
 ```
 
-### 📥 Install from PyPI (Coming Soon)
+### 🗑️ Uninstall
 
+To completely remove LofiGirl Terminal:
+
+**Windows:**
+```powershell
+Remove-Item $env:USERPROFILE\lofigirl-terminal -Recurse
+```
+
+**Mac/Linux:**
 ```bash
-pip install lofigirl-terminal
+rm -rf ~/.lofigirl-terminal ~/.local/bin/lofigirl
 ```
+
+---
 
 ## 📚 Usage
 
@@ -148,13 +162,14 @@ Launch the beautiful Terminal User Interface:
 lofigirl tui
 ```
 
-**Features:**
-- 🎨 Animated ASCII art of Lofi Girl
-- 📊 Real-time audio waveform visualization
-- 🎛️ Full playback controls
-- ⌨️ Keyboard shortcuts (SPACE, N, P, M, +/-, Y, Q)
-- 🖱️ Mouse support for buttons
-- 📺 Station info with live time tracking
+**Keyboard Controls:**
+- `SPACE` - Play/Pause
+- `N` - Next station
+- `P` - Previous station
+- `M` - Mute/Unmute
+- `+` or `=` - Volume up
+- `-` or `_` - Volume down
+- `Q` or `Ctrl+C` - Quit
 
 ### 📟 CLI Commands
 
@@ -193,7 +208,7 @@ lofigirl station-info --station lofi-hip-hop
 
 ### Configuration
 
-Create a `.env` file in the project root (copy from `.env.example`):
+Create a `.env` file in the installation directory:
 
 ```bash
 cp .env.example .env
@@ -214,113 +229,130 @@ SHOW_VISUALIZER=true
 UPDATE_INTERVAL=1           # seconds
 ```
 
+---
+
+## 🔄 Migration from Python
+
+### For Users
+
+If you have the **Python version** installed:
+
+1. **Uninstall Python version:**
+   ```bash
+   # Linux/Mac
+   bash ~/.lofigirl-terminal/uninstall.sh
+
+   # Windows PowerShell
+   Remove-Item $env:USERPROFILE\lofigirl-terminal -Recurse
+   ```
+
+2. **Install Node.js version:**
+   ```bash
+   # Use the installation commands above
+   ```
+
+3. **Done!** All your preferences are preserved.
+
+### For Developers
+
+See detailed migration guide: [MIGRATION.md](MIGRATION.md)
+
+### Why Migrate?
+
+| Python Version | Node.js Version |
+|----------------|-----------------|
+| Complex venv setup | Simple npm install |
+| Platform-specific issues | Universal compatibility |
+| Windows PATH problems | Native PowerShell support |
+| 5-7 installation steps | 2 installation steps |
+| libmpv-2.dll issues | Clean MPV integration |
+
+**Full comparison:** [MIGRATION.md](MIGRATION.md)
+
+---
+
 ## 🛠️ Development
 
-### Setup Development Environment
+### Quick Start
 
 ```bash
-# Complete setup (creates venv, installs deps, sets up pre-commit)
-make setup
+# Clone repository
+git clone https://github.com/HollyTotoC/lofigirl-terminal.git
+cd lofigirl-terminal
 
-# Or step by step:
-make venv              # Create virtual environment
-make install-dev       # Install dependencies
-make pre-commit-install # Set up git hooks
+# Install dependencies
+npm install
+
+# Build TypeScript
+npm run build
+
+# Run in development mode
+npm run dev
 ```
 
 ### Development Commands
 
 ```bash
+# Build TypeScript
+npm run build
+
+# Watch mode (auto-rebuild)
+npm run build:watch
+
+# Run in development
+npm run dev
+
+# Lint code
+npm run lint
+
+# Format code
+npm run format
+
 # Run tests
-make test              # Run tests with coverage
-make test-fast         # Run tests without coverage
-make test-watch        # Run tests in watch mode
+npm test
 
-# Code quality
-make format            # Format code with black & isort
-make lint              # Run flake8 linter
-make type-check        # Run mypy type checker
-make check-all         # Run all checks
-
-# Run the application
-make run               # Show help
-make run-play          # Play default station
-make run-list          # List stations
-
-# Utilities
-make clean             # Clean temporary files
-make clean-all         # Clean everything including venv
+# Clean build
+npm run clean
 ```
 
 ### Project Structure
 
 ```
 lofigirl-terminal/
-├── src/
-│   └── lofigirl_terminal/      # Main package
-│       ├── __init__.py
-│       ├── main.py             # CLI entry point
-│       ├── config.py           # Configuration management
-│       ├── logger.py           # Logging setup
-│       └── modules/
-│           ├── stations.py     # Station management
-│           └── player.py       # Audio player
-├── tests/                      # Test suite
-│   ├── test_config.py
-│   ├── test_stations.py
-│   └── test_player.py
-├── requirements/               # Dependencies
-│   ├── base.txt               # Production dependencies
-│   ├── dev.txt                # Development dependencies
-│   └── prod.txt               # Production-only dependencies
-├── .github/
-│   └── workflows/
-│       └── ci.yml             # GitHub Actions CI
-├── docs/                      # Documentation
-├── .gitignore
-├── .env.example               # Example configuration
-├── pyproject.toml             # Project metadata & config
-├── setup.py                   # Setup script
-├── Makefile                   # Development commands
-├── CLAUDE.md                  # Project tracker
-└── README.md                  # This file
+├── src/                      # TypeScript source
+│   ├── index.ts             # Entry point
+│   ├── cli.ts               # CLI commands (Commander.js)
+│   ├── config.ts            # Configuration (Zod)
+│   ├── logger.ts            # Logging (Winston)
+│   ├── types.ts             # TypeScript types
+│   └── modules/
+│       ├── stations.ts      # Station management
+│       ├── player.ts        # MPV player wrapper
+│       └── tui.ts           # TUI interface (blessed)
+├── dist/                    # Compiled JavaScript
+├── package.json             # npm configuration
+├── tsconfig.json            # TypeScript config
+└── README.md                # This file
 ```
 
-### Adding a New Station
+### Technology Stack
 
-```python
-from lofigirl_terminal.modules.stations import Station, StationManager
+| Component | Library |
+|-----------|---------|
+| Language | TypeScript 5.3 |
+| CLI Framework | Commander.js |
+| TUI | Blessed |
+| Terminal Colors | Chalk |
+| Audio Player | node-mpv |
+| Configuration | Zod + dotenv |
+| Logging | Winston |
+| Testing | Jest |
 
-# Create a custom station
-custom_station = Station(
-    id="my-station",
-    name="My Custom Station",
-    url="https://example.com/stream-url",
-    description="Description of the station",
-    genre="lofi"
-)
-
-# Add to manager
-manager = StationManager()
-manager.add_station(custom_station)
-```
-
-### Running Tests
-
-```bash
-# Run all tests with coverage
-pytest tests/ -v --cov=lofigirl_terminal
-
-# Run specific test file
-pytest tests/test_stations.py -v
-
-# Run with specific Python version
-python3.11 -m pytest tests/ -v
-```
+---
 
 ## 🤝 Contributing
 
-We welcome contributions from the community! Whether it's:
+We welcome contributions! Whether it's:
 
 - 🐛 Bug fixes
 - ✨ New features
@@ -335,76 +367,98 @@ Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a P
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/amazing-feature`
 3. Make your changes
-4. Run tests: `make test`
-5. Run quality checks: `make check-all`
+4. Run tests: `npm test`
+5. Run quality checks: `npm run lint && npm run format`
 6. Commit your changes: `git commit -m 'Add amazing feature'`
 7. Push to the branch: `git push origin feature/amazing-feature`
 8. Open a Pull Request
 
 ### Code Standards
 
-- **Code Style**: Black formatter (88 char line length)
-- **Linting**: Flake8 with Google-style docstrings
-- **Type Hints**: Full type annotations for all functions
-- **Testing**: Minimum 80% code coverage
+- **Code Style**: Prettier (automatic formatting)
+- **Linting**: ESLint with TypeScript support
+- **Type Safety**: Full TypeScript type annotations
+- **Testing**: Jest with coverage
 - **Commits**: Conventional commits format
+
+---
 
 ## 📋 Roadmap
 
 ### ✅ Completed
 - [x] Project structure and setup
-- [x] Basic CLI interface
-- [x] Station management
+- [x] TypeScript migration complete
+- [x] CLI interface with all commands
+- [x] TUI interface with blessed
 - [x] Configuration system
-- [x] Test suite
-- [x] CI/CD pipeline
-- [x] **Real YouTube audio streaming** (yt-dlp + python-mpv)
-- [x] **Interactive TUI interface** (Textual)
-- [x] **Audio visualizations** (waveform)
-- [x] **Animated ASCII art**
-- [x] **Full playback controls**
-- [x] **One-line installer/uninstaller**
+- [x] Station management (4 stations)
+- [x] MPV player integration
+- [x] Cross-platform installers (PowerShell + Bash)
+- [x] Full documentation
 
 ### 🚧 In Progress
-- [ ] Enhanced audio visualizations (spectrum analyzer)
-- [ ] Video mode support
+- [ ] YouTube streaming integration (ytdl-core)
+- [ ] Advanced audio visualizations
+- [ ] npm package publication
 
 ### 📅 Planned
 - [ ] Playlist/favorites system
 - [ ] Local music file support
 - [ ] Pomodoro timer integration
-- [ ] PyPI package distribution
+- [ ] Windows Store package
+- [ ] Homebrew formula (Mac)
+- [ ] APT/YUM packages (Linux)
 - [ ] Plugin system
-- [ ] Multiple themes
-- [ ] Documentation website
+- [ ] CI/CD pipeline
 
-See [CLAUDE.md](CLAUDE.md) for detailed development tracking.
+---
+
+## 📚 Documentation
+
+- **Quick Start**: [QUICKSTART-NODE.md](QUICKSTART-NODE.md)
+- **Migration Guide**: [MIGRATION.md](MIGRATION.md)
+- **Migration Summary**: [MIGRATION_SUMMARY.md](MIGRATION_SUMMARY.md)
+- **Project Tracker**: [CLAUDE.md](CLAUDE.md)
+- **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md)
+
+---
 
 ## 🐛 Known Issues
 
-- Some YouTube URLs may require periodic updates as streams change
+- MPV must be installed separately (auto-install coming soon)
+- Some YouTube URLs may require periodic updates
 - Video mode requires terminal with sixel/kitty graphics support
-- Windows support for MPV may require additional configuration
+
+**Report issues:** [GitHub Issues](https://github.com/HollyTotoC/lofigirl-terminal/issues)
+
+---
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+---
+
 ## 🙏 Acknowledgments
 
 - Inspired by the [Lofi Girl](https://www.youtube.com/c/LofiGirl) YouTube channel
-- Built with [Click](https://click.palletsprojects.com/) for CLI
-- Interactive TUI powered by [Textual](https://textual.textualize.io/)
-- Terminal output using [Rich](https://rich.readthedocs.io/)
-- Configuration using [Pydantic](https://pydantic-docs.helpmanual.io/)
-- Audio/video playback via [python-mpv](https://github.com/jaseg/python-mpv)
-- YouTube streaming with [yt-dlp](https://github.com/yt-dlp/yt-dlp)
+- Built with:
+  - [Commander.js](https://github.com/tj/commander.js/) - CLI framework
+  - [Blessed](https://github.com/chjj/blessed) - TUI library
+  - [Chalk](https://github.com/chalk/chalk) - Terminal colors
+  - [node-mpv](https://github.com/j-holub/Node-MPV) - MPV bindings
+  - [Winston](https://github.com/winstonjs/winston) - Logging
+  - [Zod](https://github.com/colinhacks/zod) - Schema validation
+
+---
 
 ## 📞 Support & Community
 
 - **Issues**: [GitHub Issues](https://github.com/HollyTotoC/lofigirl-terminal/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/HollyTotoC/lofigirl-terminal/discussions)
 - **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md)
+
+---
 
 ## ⭐ Star History
 
@@ -415,6 +469,8 @@ If you find this project useful, please consider giving it a star! ⭐
 <div align="center">
 
 **Made with ❤️ by the community**
+
+**Migrated to Node.js/TypeScript for better cross-platform support** 🚀
 
 [Report Bug](https://github.com/HollyTotoC/lofigirl-terminal/issues) • [Request Feature](https://github.com/HollyTotoC/lofigirl-terminal/issues) • [Documentation](./docs/)
 
