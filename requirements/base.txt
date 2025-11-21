@@ -6,14 +6,21 @@ python-dotenv>=1.0.0
 # CLI and UI
 click>=8.1.0  # Command-line interface creation
 rich>=13.0.0  # Rich terminal output and formatting
+textual>=0.47.0  # Modern TUI framework
 
 # HTTP requests for streaming
 requests>=2.31.0
 httpx>=0.25.0
 
-# Audio playback (choose one based on final decision)
-# python-mpv>=1.0.0  # MPV backend (recommended)
-# python-vlc>=3.0.0  # VLC backend (alternative)
+# YouTube streaming
+yt-dlp>=2023.12.0  # YouTube video/audio downloader
+
+# Audio/Video playback
+python-mpv>=1.0.1  # MPV backend (recommended for streaming)
+
+# Audio visualization
+numpy>=1.24.0  # Numerical operations for waveforms
+pillow>=10.1.0  # Image processing for ASCII art
 
 # Logging and error handling
 colorlog>=6.7.0  # Colored logging output

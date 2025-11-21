@@ -52,42 +52,40 @@ class StationManager:
 
     def _load_default_stations(self) -> None:
         """
-        Load default lofi radio stations.
+        Load default LofiGirl radio stations from YouTube.
 
-        Note: These are placeholder URLs. In production, these should be
-        replaced with actual streaming URLs from services like:
-        - YouTube Music streams
-        - SoundCloud playlists
-        - Dedicated lofi streaming services
+        These are the official LofiGirl YouTube live streams.
+        URLs will be resolved at runtime using yt-dlp to get the actual
+        streaming URLs.
         """
         default_stations = [
             Station(
                 id="lofi-hip-hop",
-                name="Lofi Hip Hop Radio",
-                url="https://example.com/lofi-hip-hop-stream",  # Placeholder
+                name="📚 Lofi Hip Hop Radio - Beats to Relax/Study",
+                url="https://www.youtube.com/watch?v=jfKfPfyJRdk",
                 description="24/7 chill lofi hip hop beats to study/relax to",
                 genre="lofi-hip-hop",
             ),
             Station(
+                id="lofi-sleep",
+                name="💤 Lofi Hip Hop Radio - Beats to Sleep/Chill",
+                url="https://www.youtube.com/@LofiGirl/streams",  # Main channel
+                description="Calming lofi beats for sleep and meditation",
+                genre="lofi-sleep",
+            ),
+            Station(
+                id="synthwave",
+                name="🌌 Synthwave Radio - Beats to Chill/Game",
+                url="https://www.youtube.com/@LofiGirl/streams",
+                description="Retro synthwave beats perfect for gaming",
+                genre="synthwave",
+            ),
+            Station(
                 id="lofi-jazz",
-                name="Lofi Jazz Radio",
-                url="https://example.com/lofi-jazz-stream",  # Placeholder
+                name="🎷 Jazz Lofi Radio - Beats to Chill/Study",
+                url="https://www.youtube.com/@LofiGirl/streams",
                 description="Smooth jazz with lofi aesthetics",
                 genre="lofi-jazz",
-            ),
-            Station(
-                id="lofi-sleep",
-                name="Lofi Sleep Radio",
-                url="https://example.com/lofi-sleep-stream",  # Placeholder
-                description="Calming lofi beats for sleep and meditation",
-                genre="lofi-ambient",
-            ),
-            Station(
-                id="lofi-study",
-                name="Lofi Study Radio",
-                url="https://example.com/lofi-study-stream",  # Placeholder
-                description="Focus-enhancing lofi beats for studying",
-                genre="lofi-study",
             ),
         ]
 
