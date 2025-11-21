@@ -1,0 +1,8 @@
+# Production dependencies
+-r base.txt
+
+# Production-specific packages can be added here
+# For example:
+# - Performance monitoring tools
+# - Production logging services
+# - etc.

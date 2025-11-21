@@ -1,0 +1,49 @@
+[flake8]
+# Configuration for flake8 linting
+
+# Match black's line length
+max-line-length = 88
+
+# Extend black's ignore list
+# Docstring warnings (can be strict)
+extend-ignore =
+    E203,
+    E266,
+    E501,
+    W503,
+    D100,
+    D104,
+    D107,
+    D200,
+    D212,
+    B017
+
+# Exclude common directories
+exclude =
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    env,
+    .eggs,
+    *.egg,
+    build,
+    dist,
+    .pytest_cache,
+    .mypy_cache,
+    .tox,
+    docs/conf.py
+
+# Files to check
+filename = *.py
+
+# McCabe complexity
+max-complexity = 10
+
+# Docstring conventions
+docstring-convention = google
+
+# Per-file ignores
+per-file-ignores =
+    __init__.py:F401,D104
+    tests/*:D100,D101,D102,D103
