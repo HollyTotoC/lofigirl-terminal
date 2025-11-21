@@ -21,31 +21,75 @@ A beautiful terminal-based lofi radio player. Bring relaxing lofi beats to your 
 
 ### ✨ Features
 
-- 🎧 **Multiple Stations**: Choose from various lofi radio stations
-- 🎨 **Beautiful UI**: Clean and minimalist terminal interface using Rich
-- ⚙️ **Configurable**: Customize volume, quality, and other settings
+#### 🎵 Audio Streaming
+- 🎧 **Real YouTube Streaming**: Direct integration with official LofiGirl channels
+- 📻 **Multiple Stations**: 4 curated lofi stations (hip-hop, sleep, synthwave, jazz)
+- 🎛️ **Full Playback Control**: Play, pause, stop, next/previous
+- 🔊 **Volume Management**: Volume control, mute, adjustable levels
+
+#### 🎨 Interactive TUI
+- 🖼️ **Animated ASCII Art**: Beautiful lofi girl animation
+- 📊 **Audio Waveform**: Real-time audio visualization
+- ⌨️ **Keyboard Shortcuts**: Complete keyboard control (SPACE, N, P, M, +/-, Y, Q)
+- 🖱️ **Mouse Support**: Clickable buttons for all actions
+- ⏱️ **Live Time Tracking**: Real-time playback duration with LIVE indicator
+
+#### 🛠️ Technical
+- ⚙️ **Configurable**: Customize volume, quality, and settings via .env
 - 🔌 **Extensible**: Easy to add custom stations
 - 🧪 **Well Tested**: Comprehensive test suite with high coverage
-- 📦 **Easy Setup**: Simple installation and configuration
+- 📦 **One-Line Install**: Automatic setup script like npm
 - 🚀 **Cross-platform**: Works on Linux, macOS, and Windows
+- 🌐 **Browser Integration**: Open current stream in YouTube
 
 ### 🔮 Planned Features
 
-- Interactive TUI with playback controls
-- Audio visualizations
-- Favorites/playlist system
-- Local music file support
-- Pomodoro timer integration
-- Multiple themes
+- 💾 Favorites/playlist system
+- 🎵 Local music file support
+- ⏲️ Pomodoro timer integration
+- 🎨 Multiple themes (light/dark variants)
+- 🎥 Video mode (terminal video support)
 
 ## 🚀 Installation
 
-### Prerequisites
+### 🎯 One-Line Install (Recommended)
+
+Install LofiGirl Terminal with a single command:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/HollyTotoC/lofigirl-terminal/main/install.sh | bash
+```
+
+This will:
+- ✅ Check system requirements (Python, Git, MPV)
+- ✅ Clone/update the repository to `~/.lofigirl-terminal`
+- ✅ Create virtual environment
+- ✅ Install all dependencies
+- ✅ Create launcher at `~/.local/bin/lofigirl`
+- ✅ Add to PATH automatically
+
+**Then simply run:**
+```bash
+lofigirl tui
+```
+
+### 🗑️ Uninstall
+
+To completely remove LofiGirl Terminal:
+
+```bash
+bash ~/.lofigirl-terminal/uninstall.sh
+```
+
+### 📦 Manual Installation
+
+#### Prerequisites
 
 - Python 3.8 or higher
 - pip (Python package manager)
+- MPV media player (for audio playback)
 
-### Quick Install
+#### Steps
 
 ```bash
 # Clone the repository
@@ -62,7 +106,7 @@ pip install -r requirements/dev.txt
 pip install -e .
 ```
 
-### Install from PyPI (Coming Soon)
+### 📥 Install from PyPI (Coming Soon)
 
 ```bash
 pip install lofigirl-terminal
@@ -70,16 +114,35 @@ pip install lofigirl-terminal
 
 ## 📚 Usage
 
-### Basic Commands
+### 🎨 Interactive TUI (Recommended)
+
+Launch the beautiful Terminal User Interface:
+
+```bash
+lofigirl tui
+```
+
+**Features:**
+- 🎨 Animated ASCII art of Lofi Girl
+- 📊 Real-time audio waveform visualization
+- 🎛️ Full playback controls
+- ⌨️ Keyboard shortcuts (SPACE, N, P, M, +/-, Y, Q)
+- 🖱️ Mouse support for buttons
+- 📺 Station info with live time tracking
+
+### 📟 CLI Commands
 
 ```bash
 # Show help
 lofigirl --help
 
+# Launch interactive TUI
+lofigirl tui
+
 # List available stations
 lofigirl list
 
-# Play default station
+# Play default station (CLI mode)
 lofigirl play
 
 # Play specific station
@@ -262,27 +325,40 @@ Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a P
 
 ## 📋 Roadmap
 
+### ✅ Completed
 - [x] Project structure and setup
 - [x] Basic CLI interface
 - [x] Station management
 - [x] Configuration system
 - [x] Test suite
 - [x] CI/CD pipeline
-- [ ] Implement actual audio streaming
-- [ ] Interactive TUI interface
-- [ ] Audio visualizations
+- [x] **Real YouTube audio streaming** (yt-dlp + python-mpv)
+- [x] **Interactive TUI interface** (Textual)
+- [x] **Audio visualizations** (waveform)
+- [x] **Animated ASCII art**
+- [x] **Full playback controls**
+- [x] **One-line installer/uninstaller**
+
+### 🚧 In Progress
+- [ ] Enhanced audio visualizations (spectrum analyzer)
+- [ ] Video mode support
+
+### 📅 Planned
 - [ ] Playlist/favorites system
+- [ ] Local music file support
+- [ ] Pomodoro timer integration
 - [ ] PyPI package distribution
 - [ ] Plugin system
+- [ ] Multiple themes
 - [ ] Documentation website
 
 See [CLAUDE.md](CLAUDE.md) for detailed development tracking.
 
 ## 🐛 Known Issues
 
-- Audio playback is currently a mock implementation (needs audio library integration)
-- Streaming URLs are placeholders and need to be replaced with actual sources
-- TUI interface is planned but not yet implemented
+- Some YouTube URLs may require periodic updates as streams change
+- Video mode requires terminal with sixel/kitty graphics support
+- Windows support for MPV may require additional configuration
 
 ## 📄 License
 
@@ -292,8 +368,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Inspired by the [Lofi Girl](https://www.youtube.com/c/LofiGirl) YouTube channel
 - Built with [Click](https://click.palletsprojects.com/) for CLI
-- UI powered by [Rich](https://rich.readthedocs.io/)
+- Interactive TUI powered by [Textual](https://textual.textualize.io/)
+- Terminal output using [Rich](https://rich.readthedocs.io/)
 - Configuration using [Pydantic](https://pydantic-docs.helpmanual.io/)
+- Audio/video playback via [python-mpv](https://github.com/jaseg/python-mpv)
+- YouTube streaming with [yt-dlp](https://github.com/yt-dlp/yt-dlp)
 
 ## 📞 Support & Community
 
