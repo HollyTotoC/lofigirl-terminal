@@ -216,6 +216,54 @@ def station_info(station: str) -> None:
     console.print()
 
 
+@cli.command()
+def tui() -> None:
+    """
+    🎨 Launch the interactive TUI (Terminal User Interface).
+
+    This opens a beautiful, full-screen terminal interface with:
+    - Animated ASCII art
+    - Audio waveform visualization
+    - Playback controls
+    - Keyboard shortcuts
+
+    Keyboard shortcuts:
+        SPACE    - Play/Pause
+        S        - Stop
+        N        - Next station
+        P        - Previous station
+        M        - Mute/Unmute
+        +/-      - Volume up/down
+        Y        - Open in YouTube
+        Q        - Quit
+
+    Example:
+        lofigirl tui
+    """
+    try:
+        from lofigirl_terminal.tui import run_tui
+
+        console.print("\n[cyan]🎵 Starting LofiGirl TUI...[/cyan]\n")
+        console.print("[dim]Press 'q' to quit, '?' for help[/dim]\n")
+
+        run_tui()
+
+    except ImportError as e:
+        console.print(
+            f"[red]Error:[/red] Failed to import TUI module",
+            style="bold",
+        )
+        console.print(
+            f"[yellow]Make sure textual is installed:[/yellow] pip install textual"
+        )
+        logger.exception(f"Failed to import TUI: {e}")
+        sys.exit(1)
+    except Exception as e:
+        console.print(f"[red]Error:[/red] {str(e)}", style="bold")
+        logger.exception(f"Error running TUI: {e}")
+        sys.exit(1)
+
+
 def main() -> None:
     """
     Main entry point for the application.

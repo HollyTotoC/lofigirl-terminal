@@ -119,6 +119,10 @@ run: ## Run the application
 	@echo "Running LofiGirl Terminal..."
 	$(BIN)/lofigirl --help
 
+run-tui: ## Launch the interactive TUI (recommended)
+	@echo "🎵 Launching LofiGirl TUI..."
+	$(BIN)/lofigirl tui
+
 run-play: ## Run and play default station
 	@echo "Playing default station..."
 	$(BIN)/lofigirl play
@@ -129,6 +133,9 @@ run-list: ## List all available stations
 
 run-info: ## Show application info
 	$(BIN)/lofigirl info
+
+# Aliases for convenience
+tui: run-tui ## Alias for run-tui
 
 build: ## Build distribution packages
 	@echo "Building distribution packages..."
