@@ -274,7 +274,7 @@ export function createCLI(): Command {
       try {
         // Import TUI dynamically
         const { runTUI } = await import('./modules/tui');
-        await runTUI(options.style);
+        await runTUI();
       } catch (error) {
         console.log(
           chalk.red.bold('Error: Failed to start TUI\n') +
