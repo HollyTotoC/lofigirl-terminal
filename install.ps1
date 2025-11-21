@@ -93,6 +93,32 @@ function Test-Requirements {
     # Check MPV
     if (Test-Command "mpv") {
         Write-Success "MPV found"
+
+        # Check if libmpv-2.dll is available
+        $mpvPath = (Get-Command mpv.exe).Source | Split-Path
+        $libmpvPath = Join-Path $mpvPath "libmpv-2.dll"
+
+        if (-not (Test-Path $libmpvPath)) {
+            Write-Warning "libmpv-2.dll not found - Python integration requires it"
+            Write-Info ""
+            Write-ColorOutput Yellow @"
+⚠️  IMPORTANT: Chocolatey's MPV package may not include libmpv-2.dll
+   which is required for Python integration.
+
+   If lofigirl fails with 'Cannot find libmpv-2.dll' error:
+
+   1. Download MPV with libmpv from:
+      https://github.com/shinchiro/mpv-winbuild-cmake/releases
+
+   2. Extract the archive and copy libmpv-2.dll to:
+      $mpvPath
+
+   3. Or see: https://github.com/HollyTotoC/lofigirl-terminal/blob/main/docs/WINDOWS_INSTALL.md
+
+"@
+            Write-Info ""
+            Read-Host "Press Enter to continue"
+        }
     } else {
         Write-Warning "MPV not found - required for audio playback"
         Write-Info "Install with: choco install mpv -y"
@@ -103,6 +129,20 @@ function Test-Requirements {
             if (Test-Command "choco") {
                 Write-Info "Installing MPV via Chocolatey..."
                 choco install mpv -y
+
+                Write-Info ""
+                Write-ColorOutput Yellow @"
+⚠️  IMPORTANT NOTE: The Chocolatey MPV package may not include libmpv-2.dll
+
+   After installation, you may need to manually add libmpv-2.dll:
+
+   1. Download from: https://github.com/shinchiro/mpv-winbuild-cmake/releases
+   2. Extract and copy libmpv-2.dll to MPV's installation folder
+   3. See detailed instructions: https://github.com/HollyTotoC/lofigirl-terminal/blob/main/docs/WINDOWS_INSTALL.md
+
+"@
+                Write-Info ""
+                Read-Host "Press Enter to continue"
             } else {
                 Write-Warning "Chocolatey not found. Please install MPV manually."
                 Write-Info "Visit: https://mpv.io/installation/"

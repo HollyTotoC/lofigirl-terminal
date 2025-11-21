@@ -28,8 +28,10 @@ A beautiful terminal-based lofi radio player. Bring relaxing lofi beats to your 
 - 🔊 **Volume Management**: Volume control, mute, adjustable levels
 
 #### 🎨 Interactive TUI
-- 🖼️ **Animated ASCII Art**: Beautiful lofi girl animation
-- 📊 **Audio Waveform**: Real-time audio visualization
+- 🍚 **Rice Style Interface**: Compact, btop-inspired design (default)
+- 🖼️ **Animated ASCII Art**: Beautiful lofi girl animation with 8+ designs
+- 📊 **Audio Waveform**: Real-time audio visualization with smooth bars
+- 🎨 **Multiple Themes**: 6 curated themes (Catppuccin, Dracula, Nord, Tokyo Night, etc.)
 - ⌨️ **Keyboard Shortcuts**: Complete keyboard control (SPACE, N, P, M, +/-, Y, Q)
 - 🖱️ **Mouse Support**: Clickable buttons for all actions
 - ⏱️ **Live Time Tracking**: Real-time playback duration with LIVE indicator
@@ -52,9 +54,30 @@ A beautiful terminal-based lofi radio player. Bring relaxing lofi beats to your 
 
 ## 🚀 Installation
 
-### 🎯 One-Line Install (Recommended)
+### 🪟 Windows (PowerShell)
 
-Install LofiGirl Terminal with a single command:
+Install with a single PowerShell command:
+
+```powershell
+irm https://raw.githubusercontent.com/HollyTotoC/lofigirl-terminal/main/install.ps1 | iex
+```
+
+**⚠️ Important**: If you get a `libmpv-2.dll` error, see the [Windows Installation Guide](docs/WINDOWS_INSTALL.md) for a quick fix.
+
+<details>
+<summary>Why this happens and how to fix it</summary>
+
+Chocolatey's MPV package includes `mpv.exe` but not `libmpv-2.dll` which Python needs. Quick fix:
+
+1. Download: https://github.com/shinchiro/mpv-winbuild-cmake/releases
+2. Extract and copy `libmpv-2.dll` to MPV's folder
+3. Full guide: [Windows Installation Guide](docs/WINDOWS_INSTALL.md)
+
+</details>
+
+### 🍎 macOS / 🐧 Linux
+
+Install with a single command:
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/HollyTotoC/lofigirl-terminal/main/install.sh | bash
@@ -62,6 +85,7 @@ curl -sSL https://raw.githubusercontent.com/HollyTotoC/lofigirl-terminal/main/in
 
 This will:
 - ✅ Check system requirements (Python, Git, MPV)
+- ✅ Auto-detect Python command (py/python/python3)
 - ✅ Clone/update the repository to `~/.lofigirl-terminal`
 - ✅ Create virtual environment
 - ✅ Install all dependencies
