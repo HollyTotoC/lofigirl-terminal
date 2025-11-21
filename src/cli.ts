@@ -237,7 +237,7 @@ export function createCLI(): Command {
       console.log(table.toString());
 
       if (!mpvCheck || !ytCheck.available) {
-        console.log(chalk.yellow(getInstallInstructions()));
+        console.log(chalk.yellow(getInstallInstructions(mpvCheck, ytCheck)));
       } else {
         console.log(
           chalk.green.bold('\n✅ All dependencies are installed! You can use LofiGirl Terminal.\n')
