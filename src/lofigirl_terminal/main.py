@@ -217,6 +217,44 @@ def station_info(station: str) -> None:
 
 
 @cli.command()
+@click.option(
+    "--force",
+    "-f",
+    is_flag=True,
+    help="Force setup even if already configured",
+)
+def setup(force: bool) -> None:
+    """
+    ⚙️  Run interactive setup wizard.
+
+    Configure your LofiGirl Terminal experience:
+    - Choose a color theme (Catppuccin, Dracula, Nord, etc.)
+    - Select a Nerd Font for better icons and glyphs
+    - Save preferences for future sessions
+
+    Examples:
+        lofigirl setup           # Run setup wizard
+        lofigirl setup --force   # Reconfigure existing setup
+    """
+    try:
+        from lofigirl_terminal.setup import run_setup
+
+        run_setup(force=force)
+
+    except ImportError as e:
+        console.print(
+            "[red]Error:[/red] Failed to import setup module",
+            style="bold",
+        )
+        logger.exception(f"Failed to import setup: {e}")
+        sys.exit(1)
+    except Exception as e:
+        console.print(f"[red]Error:[/red] {str(e)}", style="bold")
+        logger.exception(f"Error running setup: {e}")
+        sys.exit(1)
+
+
+@cli.command()
 def tui() -> None:
     """
     🎨 Launch the interactive TUI (Terminal User Interface).

@@ -17,9 +17,11 @@ from textual.containers import Horizontal
 from textual.reactive import reactive
 from textual.widgets import Button, Footer, Header, Static
 
+from lofigirl_terminal.config import get_config
 from lofigirl_terminal.logger import get_logger
 from lofigirl_terminal.modules.player_mpv import MPVPlayer, PlayerState
 from lofigirl_terminal.modules.stations import StationManager
+from lofigirl_terminal.modules.themes import ColorPalette, get_theme
 
 logger = get_logger(__name__)
 
@@ -51,8 +53,9 @@ class LofiAsciiArt(Static):
     Animated ASCII art component displaying the Lofi Girl.
     """
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, theme: ColorPalette, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
+        self.theme = theme
         self.frame = 0
 
     def on_mount(self) -> None:
@@ -66,13 +69,13 @@ class LofiAsciiArt(Static):
 
     def render_art(self) -> Panel:
         """Render the ASCII art in a panel."""
-        # Add a subtle animation by alternating colors
-        style = "cyan" if self.frame == 0 else "blue"
-        text = Text(LOFI_GIRL_ASCII, style=style, justify="center")
+        # Add a subtle animation by alternating between primary and secondary colors
+        color = self.theme.primary if self.frame == 0 else self.theme.secondary
+        text = Text(LOFI_GIRL_ASCII, style=color, justify="center")
         return Panel(
             Align.center(text),
             title="🎵 Lofi Girl",
-            border_style="bright_cyan",
+            border_style=self.theme.border,
             padding=(1, 2),
         )
 
@@ -86,8 +89,9 @@ class WaveformDisplay(Static):
     Audio waveform visualization widget.
     """
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, theme: ColorPalette, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
+        self.theme = theme
         self.frame = 0
         self.bars = "▁▂▃▄▅▆▇█"
 
@@ -110,11 +114,11 @@ class WaveformDisplay(Static):
             height = (self.frame + i * 3) % len(self.bars)
             wave += self.bars[height]
 
-        text = Text(wave, style="bright_green", justify="center")
+        text = Text(wave, style=self.theme.accent, justify="center")
         return Panel(
             Align.center(text),
             title="🎵 Audio Visualization",
-            border_style="green",
+            border_style=self.theme.accent,
         )
 
     def render(self) -> Panel:
@@ -131,23 +135,24 @@ class StationInfo(Static):
     status: reactive[str] = reactive("Stopped")
     time_info: reactive[str] = reactive("00:00")
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, theme: ColorPalette, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
+        self.theme = theme
 
     def render(self) -> Panel:
         """Render station info."""
         content = Text()
-        content.append("🎵 Station: ", style="bold cyan")
-        content.append(f"{self.station_name}\n", style="bright_white")
-        content.append("📡 Status: ", style="bold cyan")
-        content.append(f"{self.status}\n", style="bright_yellow")
-        content.append("⏱️  Time: ", style="bold cyan")
-        content.append(f"{self.time_info}", style="bright_white")
+        content.append("🎵 Station: ", style=f"bold {self.theme.primary}")
+        content.append(f"{self.station_name}\n", style=self.theme.foreground)
+        content.append("📡 Status: ", style=f"bold {self.theme.primary}")
+        content.append(f"{self.status}\n", style=self.theme.warning)
+        content.append("⏱️  Time: ", style=f"bold {self.theme.primary}")
+        content.append(f"{self.time_info}", style=self.theme.foreground)
 
         return Panel(
             content,
             title="📻 Now Playing",
-            border_style="bright_blue",
+            border_style=self.theme.primary,
         )
 
 
@@ -227,19 +232,22 @@ class LofiGirlApp(App):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
+        self.config = get_config()
+        self.color_palette: ColorPalette = get_theme(self.config.theme)
         self.station_manager = StationManager()
         self.player: Optional[MPVPlayer] = None
         self.current_station_index = 0
         self.stations = self.station_manager.get_all_stations()
         self.start_time: Optional[datetime] = None
+        logger.info(f"Using theme: {self.color_palette.name}")
 
     def compose(self) -> ComposeResult:
         """Create the application layout."""
         yield Header()
 
-        yield LofiAsciiArt(id="ascii-art")
-        yield WaveformDisplay(id="waveform")
-        yield StationInfo(id="station-info")
+        yield LofiAsciiArt(self.color_palette, id="ascii-art")
+        yield WaveformDisplay(self.color_palette, id="waveform")
+        yield StationInfo(self.color_palette, id="station-info")
         yield ControlPanel()
 
         yield Footer()

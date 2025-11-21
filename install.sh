@@ -227,6 +227,26 @@ verify_installation() {
 }
 
 # Print success message
+run_setup_wizard() {
+    echo ""
+    print_info "🎨 Let's customize your LofiGirl Terminal experience!"
+    echo ""
+
+    # Ask if user wants to run setup
+    read -p "$(echo -e ${CYAN}"Would you like to configure themes and fonts now? (Y/n): "${NC})" -n 1 -r
+    echo ""
+
+    if [[ $REPLY =~ ^[Yy]$ ]] || [[ -z $REPLY ]]; then
+        print_info "Running setup wizard..."
+        echo ""
+
+        # Run the setup command
+        "$LAUNCHER_PATH" setup
+    else
+        print_info "Skipping setup. You can run it later with: lofigirl setup"
+    fi
+}
+
 print_completion() {
     echo ""
     echo -e "${GREEN}╔════════════════════════════════════════════╗${NC}"
@@ -237,6 +257,7 @@ print_completion() {
     echo ""
     print_info "Quick Start:"
     echo -e "  ${CYAN}lofigirl tui${NC}        - Launch interactive TUI (recommended)"
+    echo -e "  ${CYAN}lofigirl setup${NC}      - Configure themes and fonts"
     echo -e "  ${CYAN}lofigirl list${NC}       - List available stations"
     echo -e "  ${CYAN}lofigirl play${NC}       - Play default station"
     echo -e "  ${CYAN}lofigirl --help${NC}     - Show all commands"
@@ -262,6 +283,7 @@ main() {
     add_to_path
 
     if verify_installation; then
+        run_setup_wizard
         print_completion
     else
         print_error "Installation failed"

@@ -39,7 +39,10 @@ class Config(BaseSettings):
     """
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=[
+            ".env",
+            str(Path.home() / ".config" / "lofigirl-terminal" / "config.env"),
+        ],
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
@@ -100,9 +103,13 @@ class Config(BaseSettings):
     )
 
     # UI Settings
-    theme: Literal["default", "dark", "light"] = Field(
-        default="default",
-        description="UI theme",
+    theme: str = Field(
+        default="catppuccin-mocha",
+        description="UI color theme (catppuccin-mocha, dracula, nord, tokyo-night, etc.)",
+    )
+    terminal_font: Optional[str] = Field(
+        default=None,
+        description="Terminal font name (e.g., 'JetBrainsMono Nerd Font')",
     )
     show_visualizer: bool = Field(
         default=True,
