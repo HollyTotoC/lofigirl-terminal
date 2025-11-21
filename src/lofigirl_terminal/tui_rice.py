@@ -319,8 +319,13 @@ class RiceLofiApp(App):
             logger.exception(f"Failed to initialize player: {e}")
             self.notify(f"Player error: {e}", severity="error", timeout=5)
 
-    def load_station(self, index: int) -> None:
-        """Load a station by index."""
+    def load_station(self, index: int, auto_play: bool = False) -> None:
+        """Load a station by index and optionally start playback.
+
+        Args:
+            index: Station index to load
+            auto_play: If True, automatically start playback after loading
+        """
         if not self.stations or not self.player:
             return
 
@@ -331,8 +336,15 @@ class RiceLofiApp(App):
             self.player.load_station(self.current_station)
             info = self.query_one("#info", CompactInfo)
             info.station_name = self.current_station.name
-            info.state = "●"
-            logger.info(f"Loaded station: {self.current_station.name}")
+
+            if auto_play:
+                # Automatically start playback
+                self.player.play()
+                info.state = "▶"
+                logger.info(f"Loaded and playing station: {self.current_station.name}")
+            else:
+                info.state = "●"
+                logger.info(f"Loaded station: {self.current_station.name}")
         except Exception as e:
             logger.exception(f"Failed to load station: {e}")
             self.notify(f"Failed to load station: {e}", severity="error")
@@ -376,7 +388,19 @@ class RiceLofiApp(App):
     @on(Button.Pressed, "#next")
     def action_next_station(self) -> None:
         """Next station."""
-        self.load_station(self.current_station_index + 1)
+        if not self.player:
+            return
+
+        # Remember if we were playing
+        was_playing = self.player.is_playing()
+
+        # Stop current playback if playing
+        if was_playing:
+            self.player.stop()
+
+        # Load next station and auto-play if we were playing
+        self.load_station(self.current_station_index + 1, auto_play=was_playing)
+
         self.notify(
             f"→ {self.current_station.name if self.current_station else 'Unknown'}",
             timeout=2,
@@ -385,7 +409,19 @@ class RiceLofiApp(App):
     @on(Button.Pressed, "#prev")
     def action_prev_station(self) -> None:
         """Previous station."""
-        self.load_station(self.current_station_index - 1)
+        if not self.player:
+            return
+
+        # Remember if we were playing
+        was_playing = self.player.is_playing()
+
+        # Stop current playback if playing
+        if was_playing:
+            self.player.stop()
+
+        # Load previous station and auto-play if we were playing
+        self.load_station(self.current_station_index - 1, auto_play=was_playing)
+
         self.notify(
             f"← {self.current_station.name if self.current_station else 'Unknown'}",
             timeout=2,
