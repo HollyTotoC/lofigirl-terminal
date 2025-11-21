@@ -64,10 +64,14 @@ export async function runTUI(): Promise<void> {
       },
     });
     screen.append(errorBox);
-    errorBox.display('No stations are available.\nPlease add stations and try again.', 0, () => {
-      screen.destroy();
-      process.exit(1);
-    });
+    errorBox.display(
+      'No stations are available.\nPlease add stations and try again.',
+      0,
+      () => {
+        screen.destroy();
+        process.exit(1);
+      }
+    );
     return;
   }
   let currentStationIndex = 0;
@@ -187,7 +191,9 @@ export async function runTUI(): Promise<void> {
    */
   function updatePlayerInfo(): void {
     if (stations.length === 0) {
-      playerInfoBox.setContent('{center}{red-fg}No stations available.{/red-fg}{/center}');
+      playerInfoBox.setContent(
+        '{center}{red-fg}No stations available.{/red-fg}{/center}'
+      );
       screen.render();
       return;
     }
@@ -217,11 +223,11 @@ export async function runTUI(): Promise<void> {
     const wave = state === PlayerState.PLAYING ? WAVE_FRAMES[waveFrame] : '▁▁▁▁▁▁▁▁';
 
     const content = `
- {center}{bold}{magenta-fg}╭─────────────────────────────────────────╮{/}{/bold}{/center}
- {center}{bold}{magenta-fg}${station.name}{/}{/bold}{/center}
- {center}{white-fg}${station.genre} • ${station.description}{/}{/center}
- {center}${stateDisplay}  │  ${volDisplay}{/center}
- {center}{cyan-fg}${wave}{/}{/center}`;
+{center}{bold}{magenta-fg}╭─────────────────────────────────────────╮{/}{/bold}{/center}
+{center}{bold}{magenta-fg}${station.name}{/}{/bold}{/center}
+{center}{white-fg}${station.genre} • ${station.description}{/}{/center}
+{center}${stateDisplay}  │  ${volDisplay}{/center}
+{center}{cyan-fg}${wave}{/}{/center}`;
 
     playerBox.setContent(content);
     screen.render();
