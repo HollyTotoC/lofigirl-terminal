@@ -79,14 +79,27 @@ export function createLogger(module: string, _tuiMode = false): winston.Logger {
   });
 }
 
+/**
+ * Enables TUI (Text User Interface) mode for the logger.
+ * When TUI mode is enabled, all console logging is suppressed globally.
+ * Use this when running in interactive terminal UIs to avoid log output interfering with the UI.
+ */
 export function enableTUIMode(): void {
   tuiModeEnabled = true;
 }
 
+/**
+ * Disables TUI (Text User Interface) mode for the logger.
+ * When TUI mode is disabled, console logging resumes as normal.
+ */
 export function disableTUIMode(): void {
   tuiModeEnabled = false;
 }
 
+/**
+ * Returns whether TUI mode is currently enabled.
+ * @returns {boolean} True if TUI mode is enabled, false otherwise.
+ */
 export function isTUIModeEnabled(): boolean {
   return tuiModeEnabled;
 }
