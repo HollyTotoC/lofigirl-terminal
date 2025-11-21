@@ -116,8 +116,8 @@ lerna-debug.log*
 # TypeScript
 *.tsbuildinfo
 
-# npm
-package-lock.json
+# npm (keep package-lock.json for CI!)
+# package-lock.json should be committed for CI
 yarn.lock
 pnpm-lock.yaml
 
