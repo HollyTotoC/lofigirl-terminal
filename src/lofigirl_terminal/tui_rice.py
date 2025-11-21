@@ -149,7 +149,10 @@ class CompactInfo(Static):
 
         # Volume bar
         volume_blocks = int(self.volume / 10)
-        volume_bar = "━" * volume_blocks + "╸" + "─" * (10 - volume_blocks)
+        if volume_blocks < 10:
+            volume_bar = "━" * volume_blocks + "╸" + "─" * (9 - volume_blocks)
+        else:
+            volume_bar = "━" * 10
         info.append(f"🔊 {volume_bar} {self.volume}%", style=self.theme.secondary)
 
         return info
