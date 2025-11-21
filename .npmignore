@@ -1,0 +1,70 @@
+# Exclude Python files from npm package
+
+# Python source (archived)
+src/lofigirl_terminal/
+*.py
+__pycache__/
+*.pyc
+
+# Python configuration (archived)
+pyproject.toml
+setup.py
+Makefile
+requirements/
+.flake8
+.pre-commit-config.yaml
+
+# Python installers (archived)
+install.ps1
+install.sh
+uninstall.sh
+
+# Development files
+.git/
+.github/
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Documentation (keep main docs, exclude verbose ones)
+MIGRATION.md
+MIGRATION_SUMMARY.md
+QUICKSTART-NODE.md
+PYTHON-ARCHIVED.md
+FINAL_SUMMARY.md
+CLAUDE.md
+CONTRIBUTING.md
+docs/
+
+# Tests
+tests/
+*.test.ts
+*.spec.ts
+
+# TypeScript source (include only dist/)
+src/
+tsconfig.json
+
+# Development dependencies
+.eslintrc.json
+.prettierrc.json
+
+# Environment files
+.env
+.env.*
+.env.local
+
+# Build artifacts
+coverage/
+.nyc_output/
+npm-debug.log*
+yarn-debug.log*
+
+# Keep these for npm:
+# - dist/ (compiled output)
+# - package.json
+# - README.md
+# - LICENSE
+# - README-NODE.md
