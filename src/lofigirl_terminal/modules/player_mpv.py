@@ -6,13 +6,14 @@ It supports YouTube streams via yt-dlp integration and provides full
 playback control.
 """
 
-from enum import Enum
-from typing import Optional, Callable
 import threading
 import time
+from enum import Enum
+from typing import Callable, Optional
 
 try:
     import mpv
+
     MPV_AVAILABLE = True
 except ImportError:
     MPV_AVAILABLE = False
@@ -112,16 +113,20 @@ class MPVPlayer:
 
             if not self.is_video_mode:
                 # Audio-only mode
-                mpv_options.update({
-                    "video": False,
-                    "vo": "null",
-                })
+                mpv_options.update(
+                    {
+                        "video": False,
+                        "vo": "null",
+                    }
+                )
             else:
                 # Video mode
-                mpv_options.update({
-                    "vo": "gpu",  # Use GPU for video output
-                    "hwdec": "auto",  # Hardware decoding
-                })
+                mpv_options.update(
+                    {
+                        "vo": "gpu",  # Use GPU for video output
+                        "hwdec": "auto",  # Hardware decoding
+                    }
+                )
 
             self._mpv = mpv.MPV(**mpv_options)
 

@@ -6,8 +6,8 @@ using yt-dlp. It extracts the direct stream URL that can be played by mpv.
 """
 
 import subprocess
-from typing import Dict, Optional
 from dataclasses import dataclass
+from typing import Dict, Optional
 
 from lofigirl_terminal.logger import get_logger
 
@@ -96,7 +96,8 @@ class YouTubeFetcher:
             cmd.append(youtube_url)
 
             # Execute yt-dlp
-            result = subprocess.run(
+            # Safe: command is built from a list, not shell=True
+            result = subprocess.run(  # nosec B603
                 cmd,
                 capture_output=True,
                 text=True,
@@ -158,7 +159,8 @@ class YouTubeFetcher:
             cmd.append(youtube_url)
 
             # Execute yt-dlp
-            result = subprocess.run(
+            # Safe: command is built from a list, not shell=True
+            result = subprocess.run(  # nosec B603
                 cmd,
                 capture_output=True,
                 text=True,
@@ -208,7 +210,8 @@ class YouTubeFetcher:
             ...     print("yt-dlp is ready!")
         """
         try:
-            result = subprocess.run(
+            # Safe: command is built from a list, not shell=True
+            result = subprocess.run(  # nosec B603
                 ["yt-dlp", "--version"],
                 capture_output=True,
                 timeout=5,

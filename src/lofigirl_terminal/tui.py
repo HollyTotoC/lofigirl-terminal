@@ -6,22 +6,22 @@ lofi radio player with visualizations, controls, and animations.
 """
 
 import webbrowser
-from typing import Optional
 from datetime import datetime, timedelta
+from typing import Optional
 
-from textual.app import App, ComposeResult
-from textual.containers import Container, Horizontal, Vertical
-from textual.widgets import Header, Footer, Static, Button, Label, ProgressBar
-from textual.reactive import reactive
-from textual import events
+from rich.align import Align
 from rich.panel import Panel
 from rich.text import Text
-from rich.align import Align
+from textual import events
+from textual.app import App, ComposeResult
+from textual.containers import Container, Horizontal, Vertical
+from textual.reactive import reactive
+from textual.widgets import Button, Footer, Header, Label, ProgressBar, Static
 
 from lofigirl_terminal.config import get_config
 from lofigirl_terminal.logger import get_logger
-from lofigirl_terminal.modules.stations import StationManager, Station
 from lofigirl_terminal.modules.player_mpv import MPVPlayer, PlayerState
+from lofigirl_terminal.modules.stations import Station, StationManager
 
 logger = get_logger(__name__)
 
@@ -296,7 +296,9 @@ class LofiGirlApp(App):
                 minutes, seconds = divmod(remainder, 60)
 
                 if self.player.is_live_stream():
-                    station_info.time_info = f"{hours:02d}:{minutes:02d}:{seconds:02d} (LIVE)"
+                    station_info.time_info = (
+                        f"{hours:02d}:{minutes:02d}:{seconds:02d} (LIVE)"
+                    )
                 else:
                     station_info.time_info = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
             else:
@@ -373,7 +375,9 @@ class LofiGirlApp(App):
 
     def action_next_station(self) -> None:
         """Play next station."""
-        self.current_station_index = (self.current_station_index + 1) % len(self.stations)
+        self.current_station_index = (self.current_station_index + 1) % len(
+            self.stations
+        )
         self.update_station_info()
 
         if self.player and self.player.is_playing():
@@ -384,7 +388,9 @@ class LofiGirlApp(App):
 
     def action_prev_station(self) -> None:
         """Play previous station."""
-        self.current_station_index = (self.current_station_index - 1) % len(self.stations)
+        self.current_station_index = (self.current_station_index - 1) % len(
+            self.stations
+        )
         self.update_station_info()
 
         if self.player and self.player.is_playing():
