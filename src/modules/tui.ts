@@ -64,15 +64,21 @@ export async function runTUI(): Promise<void> {
       },
     });
     screen.append(errorBox);
-    errorBox.display('No stations are available.\nPlease add stations and try again.', 0, () => {
-      screen.destroy();
-      process.exit(1);
-    });
+    errorBox.display(
+      'No stations are available.\nPlease add stations and try again.',
+      0,
+      () => {
+        screen.destroy();
+        process.exit(1);
+      }
+    );
     return;
   }
   let currentStationIndex = 0;
   let waveFrame = 0;
   let lastPlayerState = PlayerState.STOPPED;
+  let lastVolume = player.getVolume();
+  let lastMuted = player.isMuted();
 
   // ╔══════════════════════════════════════╗
   // ║  COMPACT RICE-STYLE LAYOUT           ║
@@ -187,7 +193,7 @@ export async function runTUI(): Promise<void> {
    */
   function updatePlayerInfo(): void {
     if (stations.length === 0) {
-      playerInfoBox.setContent('{center}{red-fg}No stations available.{/red-fg}{/center}');
+      playerBox.setContent('{center}{red-fg}No stations available.{/red-fg}{/center}');
       screen.render();
       return;
     }
@@ -214,6 +220,52 @@ export async function runTUI(): Promise<void> {
       : `{cyan-fg}🔊 ${volBar}{/} {bold}${volume}%{/bold}`;
 
     // Wave animation
+    const wave = state === PlayerState.PLAYING ? WAVE_FRAMES[waveFrame] : '▁▁▁▁▁▁▁▁';
+
+    const content = `
+ {center}{bold}{magenta-fg}╭─────────────────────────────────────────╮{/}{/bold}{/center}
+ {center}{bold}{magenta-fg}${station.name}{/}{/bold}{/center}
+ {center}{white-fg}${station.genre} • ${station.description}{/}{/center}
+ {center}${stateDisplay}  │  ${volDisplay}{/center}
+ {center}{cyan-fg}${wave}{/}{/center}`;
+
+    playerBox.setContent(content);
+    screen.render();
+  }
+
+  /**
+   * Update only the wave animation (optimized for minimal re-rendering)
+   * This avoids re-calculating state, volume, and other UI elements
+   */
+  function updateWaveAnimation(): void {
+    if (stations.length === 0) {
+      return;
+    }
+    const station = stations[currentStationIndex];
+
+    // Use cached values from last full update
+    const state = lastPlayerState;
+    const volume = lastVolume;
+    const isMuted = lastMuted;
+
+    // State icon with color (use cached value)
+    let stateDisplay = '';
+    if (state === PlayerState.PLAYING) {
+      stateDisplay = '{green-fg}▶ PLAYING{/}';
+    } else if (state === PlayerState.PAUSED) {
+      stateDisplay = '{yellow-fg}⏸ PAUSED{/}';
+    } else {
+      stateDisplay = '{white-fg}⏹ STOPPED{/}';
+    }
+
+    // Volume bar (use cached value)
+    const volBars = Math.max(0, Math.min(10, Math.floor(volume / 10)));
+    const volBar = '█'.repeat(volBars) + '░'.repeat(10 - volBars);
+    const volDisplay = isMuted
+      ? '{red-fg}🔇 MUTED{/}'
+      : `{cyan-fg}🔊 ${volBar}{/} {bold}${volume}%{/bold}`;
+
+    // Only update wave animation
     const wave = state === PlayerState.PLAYING ? WAVE_FRAMES[waveFrame] : '▁▁▁▁▁▁▁▁';
 
     const content = `
@@ -363,19 +415,36 @@ export async function runTUI(): Promise<void> {
   // Update wave animation and status - optimized to reduce unnecessary re-renders
   setInterval(() => {
     const currentState = player.getState();
-    const stateChanged = currentState !== lastPlayerState;
+    const currentVolume = player.getVolume();
+    const currentMuted = player.isMuted();
 
-    // Only update wave animation when playing
+    const stateChanged = currentState !== lastPlayerState;
+    const volumeChanged = currentVolume !== lastVolume;
+    const mutedChanged = currentMuted !== lastMuted;
+
+    // Determine if we need a full UI update (not just wave animation)
+    const needsFullUpdate = stateChanged || volumeChanged || mutedChanged;
+
+    // Update wave animation when playing
     if (currentState === PlayerState.PLAYING) {
       waveFrame = (waveFrame + 1) % WAVE_FRAMES.length;
-      // Always update during playback for smooth animation
-      updatePlayerInfo();
-    } else if (stateChanged) {
-      // Update only when state changes (stopped/paused/etc)
+
+      // Only do full update if state actually changed, not just for wave animation
+      if (needsFullUpdate) {
+        updatePlayerInfo();
+      } else {
+        // Just update the wave animation without re-rendering everything
+        updateWaveAnimation();
+      }
+    } else if (needsFullUpdate) {
+      // Update only when state/volume/mute changes (stopped/paused/etc)
       updatePlayerInfo();
     }
 
+    // Update tracked state
     lastPlayerState = currentState;
+    lastVolume = currentVolume;
+    lastMuted = currentMuted;
   }, 200);
 
   screen.render();
