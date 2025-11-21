@@ -35,18 +35,37 @@ const customFormat = winston.format.printf(({ level, message, timestamp, ...meta
 });
 
 /**
+ * Custom console transport that respects TUI mode flag dynamically
+ */
+class DynamicConsoleTransport extends winston.transports.Console {
+  constructor(opts?: winston.transports.ConsoleTransportOptions) {
+    super(opts);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  log(info: any, callback?: () => void): void {
+    // Check TUI mode flag dynamically on every log call
+    if (tuiModeEnabled) {
+      // Silently skip logging in TUI mode
+      if (callback) callback();
+      return;
+    }
+    // Otherwise, use normal console logging
+    // @ts-ignore - Winston types are inconsistent with callback optionality
+    super.log(info, callback);
+  }
+}
+
+/**
  * Create and configure Winston logger
  */
-export function createLogger(module: string, tuiMode = false): winston.Logger {
-  // In TUI mode or when globally disabled, don't log to console to avoid breaking blessed UI
-  const shouldSilence = tuiMode || tuiModeEnabled;
-  const transports = shouldSilence
-    ? []
-    : [
-        new winston.transports.Console({
-          silent: !config.debugMode && config.logLevel === 'DEBUG',
-        }),
-      ];
+export function createLogger(module: string, _tuiMode = false): winston.Logger {
+  // Always create the transport, but it will check tuiModeEnabled dynamically
+  const transports = [
+    new DynamicConsoleTransport({
+      silent: !config.debugMode && config.logLevel === 'DEBUG',
+    }),
+  ];
 
   return winston.createLogger({
     level: config.logLevel.toLowerCase(),
