@@ -73,6 +73,7 @@ export async function runTUI(): Promise<void> {
   let currentStationIndex = 0;
   let waveFrame = 0;
   let lastPlayerState = PlayerState.STOPPED;
+  let updateInterval: NodeJS.Timeout | null = null;
 
   // ╔══════════════════════════════════════╗
   // ║  COMPACT RICE-STYLE LAYOUT           ║
@@ -351,6 +352,9 @@ export async function runTUI(): Promise<void> {
 
   screen.key(['q', 'C-c'], async () => {
     log('Shutting down... Goodbye! ♪', 'error');
+    if (updateInterval) {
+      clearInterval(updateInterval);
+    }
     await player.stop();
     await player.cleanup();
     process.exit(0);
@@ -361,7 +365,7 @@ export async function runTUI(): Promise<void> {
   // ╚══════════════════════════════════════╝
 
   // Update wave animation and status - optimized to reduce unnecessary re-renders
-  setInterval(() => {
+  updateInterval = setInterval(() => {
     const currentState = player.getState();
     const stateChanged = currentState !== lastPlayerState;
 
