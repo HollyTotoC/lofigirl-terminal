@@ -69,9 +69,15 @@ export class MPVPlayer {
         // Enable YouTube support via yt-dlp/youtube-dl
         'ytdl': true,
         'ytdl-format': 'bestaudio',
-        // Script options for better YouTube streaming
-        'script-opts': 'ytdl_hook-ytdl_path=yt-dlp',
       };
+
+      // Only set ytdl_path if we detected a specific extractor
+      // This allows MPV to use its default behavior when neither is specified,
+      // or use the correct extractor when one is detected
+      if (ytCheck.available && ytCheck.extractor) {
+        mpvOptions['script-opts'] = `ytdl_hook-ytdl_path=${ytCheck.extractor}`;
+        logger.debug(`Configured MPV to use: ${ytCheck.extractor}`);
+      }
 
       // Try different socket paths for cross-platform compatibility
       if (process.platform === 'win32') {
