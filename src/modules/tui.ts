@@ -9,7 +9,6 @@ import { getStationManager } from './stations';
 import { PlayerState } from '../types';
 import { enableTUIMode, createLogger } from '../logger';
 
-const logger = createLogger('tui', true);
 
 // ASCII Art for lofi vibes
 const LOFI_ASCII = `
