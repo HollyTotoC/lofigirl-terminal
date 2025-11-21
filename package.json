@@ -1,0 +1,70 @@
+{
+  "name": "lofigirl-terminal",
+  "version": "0.2.0",
+  "description": "A cross-platform terminal-based lofi radio player (Node.js/TypeScript)",
+  "main": "dist/index.js",
+  "bin": {
+    "lofigirl": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "clean": "rimraf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "lofi",
+    "radio",
+    "terminal",
+    "music",
+    "cli",
+    "tui",
+    "cross-platform",
+    "youtube"
+  ],
+  "author": "LofiGirl Terminal Contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HollyTotoC/lofigirl-terminal.git"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "blessed": "^0.1.81",
+    "blessed-contrib": "^4.11.0",
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.3",
+    "commander": "^11.1.0",
+    "dotenv": "^16.3.1",
+    "node-mpv": "^2.0.0-beta.2",
+    "winston": "^3.11.0",
+    "zod": "^3.22.4",
+    "ytdl-core": "^4.11.5",
+    "boxen": "^5.1.2",
+    "ora": "^5.4.1"
+  },
+  "devDependencies": {
+    "@types/blessed": "^0.1.25",
+    "@types/node": "^20.10.6",
+    "@typescript-eslint/eslint-plugin": "^6.17.0",
+    "@typescript-eslint/parser": "^6.17.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.2",
+    "jest": "^29.7.0",
+    "prettier": "^3.1.1",
+    "rimraf": "^5.0.5",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
