@@ -1,22 +1,27 @@
 # CLAUDE.md - LofiGirl Terminal Project Tracker
 
 ## 📻 Project Overview
-**LofiGirl Terminal** is a terminal-based lofi radio player that brings the relaxing vibes of lofi music to your command line. Inspired by the popular "lofi girl" YouTube streams, this project aims to create a beautiful, minimalist terminal interface for streaming lofi music while you code, study, or relax.
+**LofiGirl Terminal** is a cross-platform terminal-based lofi radio player that brings the relaxing vibes of lofi music to your command line. Inspired by the popular "lofi girl" YouTube streams, this project provides a beautiful, minimalist terminal interface for streaming lofi music while you code, study, or relax.
+
+**🆕 MAJOR UPDATE**: Project migrated from Python to Node.js/TypeScript for superior cross-platform support!
 
 ## 🎯 Project Goals
-- Create an accessible, easy-to-use terminal music player
-- Support multiple lofi radio stations/streams
-- Provide a beautiful terminal UI with visualizations
-- Keep dependencies minimal and code clean
-- Build a welcoming community-driven project
+- ✅ Create an accessible, easy-to-use terminal music player
+- ✅ Support multiple lofi radio stations/streams
+- ✅ Provide a beautiful terminal UI with visualizations
+- ✅ True cross-platform: PowerShell (Windows), Terminal (Mac/Linux)
+- ✅ Keep dependencies minimal and code clean
+- ✅ Build a welcoming community-driven project
 
 ## 🏗️ Architecture Decisions
 
-### Technology Stack
-- **Language**: Python 3.8+ (widely accessible, easy for contributors)
-- **Audio**: Will need audio streaming library (mpv, vlc, or pygame)
-- **UI**: Terminal UI library (Rich, Textual, or Curses)
-- **Package Management**: Poetry or pip with requirements files
+### Technology Stack (Updated 2025-11)
+- **Language**: Node.js/TypeScript 5.3+ (universal, easy for contributors)
+- **Audio**: node-mpv (MPV media player bindings)
+- **UI**: blessed (cross-platform TUI library)
+- **CLI**: Commander.js (command-line interface)
+- **Terminal Output**: chalk, cli-table3, boxen (rich formatting)
+- **Package Management**: npm (universal across all platforms)
 
 ### Project Type
 - **CLI Application** with potential for:
@@ -31,69 +36,94 @@
 
 ## 📋 Development Phases
 
-### Phase 1: Foundation (Current)
+### Phase 1: Foundation ✅
 - [x] Repository creation
-- [ ] Project structure setup
-- [ ] Basic configuration files
-- [ ] Development environment setup
-- [ ] CI/CD pipeline
-- [ ] Documentation framework
+- [x] Project structure setup (TypeScript)
+- [x] Basic configuration files (package.json, tsconfig.json)
+- [x] Development environment setup
+- [x] Documentation framework
 
-### Phase 2: Core Features
-- [ ] Audio streaming functionality
-- [ ] Basic playback controls (play/pause/stop)
-- [ ] Multiple station support
-- [ ] Configuration management
-- [ ] Error handling and logging
+### Phase 2: Core Features ✅
+- [x] Audio streaming functionality (node-mpv)
+- [x] Basic playback controls (play/pause/stop)
+- [x] Multiple station support (4 stations)
+- [x] Configuration management (dotenv + zod)
+- [x] Error handling and logging (winston)
 
-### Phase 3: User Interface
-- [ ] Terminal UI design
-- [ ] Interactive controls
-- [ ] Visual feedback (now playing, volume, etc.)
-- [ ] Keyboard shortcuts
+### Phase 3: User Interface ✅
+- [x] CLI interface (Commander.js)
+- [x] Terminal UI design (blessed)
+- [x] Interactive controls (keyboard shortcuts)
+- [x] Visual feedback (status, volume, etc.)
+- [x] Keyboard shortcuts (SPACE, N, P, M, +/-, Q)
 
-### Phase 4: Enhancement
-- [ ] Audio visualizations
+### Phase 4: Cross-Platform Support ✅
+- [x] PowerShell installer (install-node.ps1)
+- [x] Bash installer (install-node.sh)
+- [x] Windows compatibility
+- [x] Mac/Linux compatibility
+- [x] Universal npm package
+
+### Phase 5: Enhancement (In Progress)
+- [x] Volume control
+- [x] Station management
+- [ ] Audio visualizations (advanced)
 - [ ] Playlist/favorites system
-- [ ] Volume control
-- [ ] Station management
+- [ ] YouTube integration (ytdl-core)
 
-### Phase 5: Community & Polish
-- [ ] Cross-platform testing
-- [ ] Installation via pip/pipx
-- [ ] Contribution guidelines
-- [ ] User documentation
+### Phase 6: Community & Polish (Planned)
+- [x] Cross-platform testing
+- [x] Contribution guidelines
+- [x] User documentation
+- [ ] npm package publication
+- [ ] CI/CD pipeline (GitHub Actions)
 - [ ] Release automation
+- [ ] Windows Store / Homebrew packages
 
 ## 🔧 Technical Decisions Log
 
-### Decision 1: Project Structure
+### Decision 4: Migration to Node.js/TypeScript ⭐
 **Date**: 2025-11-21
-**Decision**: Use src layout for better package isolation
+**Decision**: Migrate from Python to Node.js/TypeScript
 **Rationale**:
-- Prevents accidental imports from development directory
-- Professional standard for Python packages
-- Better for eventual PyPI distribution
+- **Better cross-platform**: npm works identically on Windows, Mac, Linux
+- **PowerShell first-class**: Native support without workarounds
+- **Simpler installation**: No virtual environments needed
+- **Global CLI support**: `npm install -g` works everywhere
+- **Type safety**: TypeScript provides better DX than Python+mypy
+- **Active ecosystem**: Larger package ecosystem and community
+- **Windows support**: No more libmpv-2.dll issues
 
-### Decision 2: Code Quality Tools
+**Migration completed**: All core features ported successfully! ✅
+
+### Decision 3: Dependency Management (Updated)
+**Date**: 2025-11-21
+**Approach**: npm with package.json
+**Rationale**:
+- Universal across all platforms
+- No virtual environments needed
+- Lock files (package-lock.json) ensure reproducibility
+- Global install support built-in
+
+### Decision 2: Code Quality Tools (Updated)
 **Date**: 2025-11-21
 **Tools Selected**:
-- `black`: Code formatting (PEP 8 compliant)
-- `flake8`: Linting and style checking
-- `mypy`: Static type checking
-- `pytest`: Testing framework
-- `coverage`: Code coverage reporting
-- `pre-commit`: Automated quality checks
+- `eslint`: Linting with TypeScript support
+- `prettier`: Code formatting
+- `typescript`: Type checking (built-in)
+- `jest`: Testing framework
+- `ts-node`: Development execution
 
-**Rationale**: Industry standard tools that ensure code quality and consistency across contributors
+**Rationale**: Modern JavaScript/TypeScript tooling standard
 
-### Decision 3: Dependency Management
+### Decision 1: Project Structure (Updated)
 **Date**: 2025-11-21
-**Approach**: Requirements files (base/dev/prod)
+**Decision**: TypeScript src layout with dist output
 **Rationale**:
-- Simpler for beginners to understand
-- No additional tool installation needed
-- Can migrate to Poetry later if needed
+- Clean separation of source and compiled code
+- Professional standard for npm packages
+- Better for npm/global distribution
+- TypeScript declaration files for better IDE support
 
 ## 🤝 Collaboration Guidelines
 
