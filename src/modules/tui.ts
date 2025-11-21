@@ -44,6 +44,32 @@ export async function runTUI(): Promise<void> {
   const stationManager = getStationManager();
   const player = getPlayer();
   const stations = stationManager.getAllStations();
+  if (stations.length === 0) {
+    // Show error message in TUI and exit
+    const errorBox = blessed.message({
+      top: 'center',
+      left: 'center',
+      width: '50%',
+      height: 5,
+      tags: true,
+      border: {
+        type: 'line',
+      },
+      style: {
+        fg: 'red',
+        bg: 'black',
+        border: {
+          fg: 'red',
+        },
+      },
+    });
+    screen.append(errorBox);
+    errorBox.display('No stations are available.\nPlease add stations and try again.', 0, () => {
+      screen.destroy();
+      process.exit(1);
+    });
+    return;
+  }
   let currentStationIndex = 0;
   let waveFrame = 0;
   let lastPlayerState = PlayerState.STOPPED;
