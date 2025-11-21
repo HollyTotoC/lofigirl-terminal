@@ -2,7 +2,7 @@
  * Dependency checking utilities
  */
 
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { createLogger } from '../logger';
 
 const logger = createLogger('dependencies');
@@ -13,9 +13,9 @@ const logger = createLogger('dependencies');
 export function isCommandAvailable(command: string): boolean {
   try {
     if (process.platform === 'win32') {
-      execSync(`where ${command}`, { stdio: 'ignore' });
+      execFileSync('where', [command], { stdio: 'ignore' });
     } else {
-      execSync(`which ${command}`, { stdio: 'ignore' });
+      execFileSync('which', [command], { stdio: 'ignore' });
     }
     return true;
   } catch {
@@ -26,7 +26,10 @@ export function isCommandAvailable(command: string): boolean {
 /**
  * Check if yt-dlp or youtube-dl is available
  */
-export function checkYouTubeExtractor(): { available: boolean; extractor: string | null } {
+export function checkYouTubeExtractor(): {
+  available: boolean;
+  extractor: string | null;
+} {
   if (isCommandAvailable('yt-dlp')) {
     logger.debug('Found yt-dlp');
     return { available: true, extractor: 'yt-dlp' };
