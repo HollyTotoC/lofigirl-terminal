@@ -59,7 +59,7 @@ class DynamicConsoleTransport extends winston.transports.Console {
 /**
  * Create and configure Winston logger
  */
-export function createLogger(module: string, _tuiMode = false): winston.Logger {
+export function createLogger(module: string): winston.Logger {
   // Always create the transport, but it will check tuiModeEnabled dynamically
   const transports = [
     new DynamicConsoleTransport({
