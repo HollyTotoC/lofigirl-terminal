@@ -113,7 +113,8 @@ export class MPVPlayer {
 
       logger.info('MPV instance initialized successfully');
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
+      const errorMessage =
+        error instanceof Error ? error.message : JSON.stringify(error);
       logger.error(`Failed to initialize mpv: ${errorMessage}`);
       throw new Error(`Failed to initialize mpv: ${errorMessage}`);
     }
@@ -165,7 +166,8 @@ export class MPVPlayer {
         await this.mpvPlayer.load(this.currentStation.url);
         this.updateState(PlayerState.PLAYING);
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
+        const errorMessage =
+          error instanceof Error ? error.message : JSON.stringify(error);
         logger.error(`Failed to start playback: ${errorMessage}`);
         this.updateState(PlayerState.ERROR);
         throw new Error(`Failed to start playback: ${errorMessage}`);
