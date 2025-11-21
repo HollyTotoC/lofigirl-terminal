@@ -69,6 +69,7 @@ export async function runTUI(): Promise<void> {
       0,
       () => {
         screen.destroy();
+        disableTUIMode();
         process.exit(1);
       }
     );
