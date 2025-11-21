@@ -30,7 +30,7 @@ const WAVE_FRAMES = [
   '█▁▂▃▄▅▆▇',
 ];
 
-export async function runTUI(_style = 'rice'): Promise<void> {
+export async function runTUI(): Promise<void> {
   // Enable TUI mode to suppress console logs
   enableTUIMode();
 
