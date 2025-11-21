@@ -262,6 +262,13 @@ export class MPVPlayer {
   }
 
   /**
+   * Check if muted
+   */
+  isMuted(): boolean {
+    return this.muted;
+  }
+
+  /**
    * Check if playing
    */
   isPlaying(): boolean {

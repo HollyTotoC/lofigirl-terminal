@@ -1,14 +1,32 @@
 /**
  * Terminal User Interface for LofiGirl Terminal
- * Using blessed for cross-platform TUI
+ * Rice-style compact UI with ASCII art
  */
 
 import blessed from 'blessed';
 import { getPlayer } from './player';
 import { getStationManager } from './stations';
 import { PlayerState } from '../types';
+import { enableTUIMode, createLogger } from '../logger';
+
+const logger = createLogger('tui', true);
+
+// ASCII Art for lofi vibes
+const LOFI_ASCII = `
+     ▄▄▄▄▄▄▄▄▄
+    █░░░░░░░░█
+    █░ ◉  ◉ ░█   ♪♫♪
+    █░   ▿   ░█
+    █░ ╰───╯ ░█
+     ▀▀▀▀▀▀▀▀▀
+`;
+
+const WAVE_FRAMES = ['▁▂▃▄▅▆▇█', '▂▃▄▅▆▇█▁', '▃▄▅▆▇█▁▂', '▄▅▆▇█▁▂▃', '▅▆▇█▁▂▃▄', '▆▇█▁▂▃▄▅', '▇█▁▂▃▄▅▆', '█▁▂▃▄▅▆▇'];
 
 export async function runTUI(_style = 'rice'): Promise<void> {
+  // Enable TUI mode to suppress console logs
+  enableTUIMode();
+
   // Create screen
   const screen = blessed.screen({
     smartCSR: true,
@@ -20,142 +38,183 @@ export async function runTUI(_style = 'rice'): Promise<void> {
   const player = getPlayer();
   const stations = stationManager.getAllStations();
   let currentStationIndex = 0;
+  let waveFrame = 0;
 
-  // Title box
-  const titleBox = blessed.box({
+  // ╔══════════════════════════════════════╗
+  // ║  COMPACT RICE-STYLE LAYOUT           ║
+  // ╚══════════════════════════════════════╝
+
+  // Top bar with ASCII art and title (compact)
+  const headerBox = blessed.box({
     top: 0,
-    left: 'center',
-    width: '90%',
-    height: 3,
-    content: '{center}🎵 {bold}LofiGirl Terminal{/bold} - Lofi Radio Player{/center}',
+    left: 0,
+    width: '100%',
+    height: 8,
     tags: true,
     border: {
       type: 'line',
     },
     style: {
-      border: {
-        fg: 'cyan',
-      },
-      fg: 'white',
-    },
-  });
-
-  // Station info box
-  const stationBox = blessed.box({
-    top: 3,
-    left: 'center',
-    width: '90%',
-    height: 5,
-    tags: true,
-    border: {
-      type: 'line',
-    },
-    style: {
-      border: {
-        fg: 'green',
-      },
-    },
-  });
-
-  // Controls box
-  const controlsBox = blessed.box({
-    top: 8,
-    left: 'center',
-    width: '90%',
-    height: 5,
-    content: `{center}Controls:{/center}
-{center}[SPACE] Play/Pause  [N] Next  [P] Previous  [M] Mute  [+/-] Volume  [Q] Quit{/center}`,
-    tags: true,
-    border: {
-      type: 'line',
-    },
-    style: {
-      border: {
-        fg: 'yellow',
-      },
-    },
-  });
-
-  // Status box
-  const statusBox = blessed.box({
-    top: 13,
-    left: 'center',
-    width: '90%',
-    height: 4,
-    tags: true,
-    border: {
-      type: 'line',
-    },
-    style: {
+      fg: 'magenta',
+      bg: 'black',
       border: {
         fg: 'magenta',
       },
     },
   });
 
-  // Log box
+  // Player info - compact single box
+  const playerBox = blessed.box({
+    top: 8,
+    left: 0,
+    width: '100%',
+    height: 7,
+    tags: true,
+    border: {
+      type: 'line',
+    },
+    style: {
+      fg: 'cyan',
+      bg: 'black',
+      border: {
+        fg: 'cyan',
+      },
+    },
+  });
+
+  // Controls - single line compact
+  const controlsBox = blessed.box({
+    top: 15,
+    left: 0,
+    width: '100%',
+    height: 3,
+    tags: true,
+    border: {
+      type: 'line',
+    },
+    style: {
+      fg: 'green',
+      bg: 'black',
+      border: {
+        fg: 'green',
+      },
+    },
+  });
+
+  // Logs - minimal, at bottom
   const logBox = blessed.log({
-    top: 17,
-    left: 'center',
-    width: '90%',
-    height: 8,
+    top: 18,
+    left: 0,
+    width: '100%',
+    height: 'shrink',
     tags: true,
     scrollable: true,
     alwaysScroll: true,
+    mouse: true,
+    keys: true,
+    vi: true,
     scrollbar: {
-      ch: ' ',
+      ch: '█',
       style: {
-        bg: 'blue',
+        fg: 'magenta',
+        bg: 'black',
       },
     },
     border: {
       type: 'line',
     },
     style: {
+      fg: 'magenta',
+      bg: 'black',
       border: {
-        fg: 'blue',
+        fg: 'magenta',
       },
     },
   });
 
-  screen.append(titleBox);
-  screen.append(stationBox);
+  screen.append(headerBox);
+  screen.append(playerBox);
   screen.append(controlsBox);
-  screen.append(statusBox);
   screen.append(logBox);
 
   /**
-   * Update station info display
+   * Update header with ASCII art and title
    */
-  function updateStationInfo(): void {
-    const station = stations[currentStationIndex];
-    stationBox.setContent(
-      `{center}{bold}🎧 ${station.name}{/bold}{/center}\n` +
-        `{center}{dim}Genre: ${station.genre}{/dim}{/center}`
-    );
+  function updateHeader(): void {
+    const title = '{center}{bold}{magenta-fg}♪ LofiGirl Terminal ♪{/}{/bold}{/center}';
+    const subtitle = '{center}{white-fg}chill beats to code/relax to{/}{/center}';
+
+    headerBox.setContent(`${title}\n${subtitle}\n${LOFI_ASCII}`);
     screen.render();
   }
 
   /**
-   * Update status display
+   * Update player info display (compact)
    */
-  function updateStatus(): void {
+  function updatePlayerInfo(): void {
+    const station = stations[currentStationIndex];
     const state = player.getState();
     const volume = player.getVolume();
-    const stateIcon =
-      state === PlayerState.PLAYING ? '▶️' : state === PlayerState.PAUSED ? '⏸️' : '⏹️';
+    const isMuted = player.isMuted();
 
-    statusBox.setContent(
-      `{center}Status: {bold}${stateIcon} ${state.toUpperCase()}{/bold}  |  Volume: {bold}${volume}%{/bold}{/center}`
-    );
+    // State icon with color
+    let stateDisplay = '';
+    if (state === PlayerState.PLAYING) {
+      stateDisplay = '{green-fg}▶ PLAYING{/}';
+    } else if (state === PlayerState.PAUSED) {
+      stateDisplay = '{yellow-fg}⏸ PAUSED{/}';
+    } else {
+      stateDisplay = '{white-fg}⏹ STOPPED{/}';
+    }
+
+    // Volume bar
+    const volBars = Math.floor(volume / 10);
+    const volBar = '█'.repeat(volBars) + '░'.repeat(10 - volBars);
+    const volDisplay = isMuted ? '{red-fg}🔇 MUTED{/}' : `{cyan-fg}🔊 ${volBar}{/} {bold}${volume}%{/bold}`;
+
+    // Wave animation
+    const wave = state === PlayerState.PLAYING ? WAVE_FRAMES[waveFrame] : '▁▁▁▁▁▁▁▁';
+
+    const content = `
+ {center}{bold}{magenta-fg}╭─────────────────────────────────────────╮{/}{/bold}{/center}
+ {center}{bold}{magenta-fg}${station.name}{/}{/bold}{/center}
+ {center}{white-fg}${station.genre} • ${station.description}{/}{/center}
+ {center}${stateDisplay}  │  ${volDisplay}{/center}
+ {center}{cyan-fg}${wave}{/}{/center}`;
+
+    playerBox.setContent(content);
     screen.render();
   }
 
   /**
-   * Log message to log box
+   * Update controls display (compact)
    */
-  function log(message: string, color = 'white'): void {
-    logBox.log(`{${color}-fg}${message}{/${color}-fg}`);
+  function updateControls(): void {
+    const controls = '{center}{green-fg}[SPACE]{/} Play/Pause  {green-fg}[N]{/} Next  {green-fg}[P]{/} Prev  {green-fg}[M]{/} Mute  {green-fg}[+/-]{/} Vol  {red-fg}[Q]{/} Quit{/center}';
+    controlsBox.setContent(controls);
+    screen.render();
+  }
+
+  /**
+   * Log message to log box (with colors)
+   */
+  function log(message: string, type: 'info' | 'success' | 'warn' | 'error' = 'info'): void {
+    const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false });
+    let color = 'magenta';
+
+    switch (type) {
+      case 'success':
+        color = 'green';
+        break;
+      case 'warn':
+        color = 'yellow';
+        break;
+      case 'error':
+        color = 'red';
+        break;
+    }
+
+    logBox.log(`{white-fg}${timestamp}{/} {${color}-fg}${message}{/}`);
   }
 
   /**
@@ -164,15 +223,15 @@ export async function runTUI(_style = 'rice'): Promise<void> {
   async function playCurrentStation(): Promise<void> {
     const station = stations[currentStationIndex];
     try {
-      log(`Loading ${station.name}...`, 'cyan');
+      log(`Loading ${station.name}...`, 'info');
       await player.loadStation(station);
       await player.play();
-      updateStationInfo();
-      updateStatus();
-      log(`Now playing: ${station.name}`, 'green');
+      updateHeader();
+      updatePlayerInfo();
+      log(`♪ Now playing: ${station.name}`, 'success');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      log(`Error: ${errorMessage}`, 'red');
+      log(`Error: ${errorMessage}`, 'error');
     }
   }
 
@@ -194,62 +253,71 @@ export async function runTUI(_style = 'rice'): Promise<void> {
     await playCurrentStation();
   }
 
-  // Initialize
-  updateStationInfo();
-  updateStatus();
-  log('Welcome to LofiGirl Terminal!', 'cyan');
-  log('Press SPACE to start playing', 'yellow');
+  // Initialize UI
+  updateHeader();
+  updatePlayerInfo();
+  updateControls();
+  log('Welcome to LofiGirl Terminal! ♪', 'success');
+  log('Press SPACE to start playing...', 'info');
 
-  // Keyboard controls
+  // ╔══════════════════════════════════════╗
+  // ║  KEYBOARD CONTROLS                   ║
+  // ╚══════════════════════════════════════╝
+
   screen.key(['space'], async () => {
     if (player.getState() === PlayerState.STOPPED) {
       await playCurrentStation();
     } else {
       await player.togglePause();
-      updateStatus();
-      log(player.isPlaying() ? 'Resumed playback' : 'Paused playback', 'yellow');
+      updatePlayerInfo();
+      log(player.isPlaying() ? '▶ Resumed' : '⏸ Paused', 'warn');
     }
   });
 
   screen.key(['n'], async () => {
-    log('Next station...', 'cyan');
+    log('→ Next station', 'info');
     await nextStation();
   });
 
   screen.key(['p'], async () => {
-    log('Previous station...', 'cyan');
+    log('← Previous station', 'info');
     await previousStation();
   });
 
   screen.key(['m'], async () => {
     await player.toggleMute();
-    log('Mute toggled', 'yellow');
-    updateStatus();
+    log(player.isMuted() ? '🔇 Muted' : '🔊 Unmuted', 'warn');
+    updatePlayerInfo();
   });
 
   screen.key(['+', '='], async () => {
     await player.volumeUp(5);
-    updateStatus();
-    log(`Volume: ${player.getVolume()}%`, 'yellow');
+    updatePlayerInfo();
   });
 
   screen.key(['-', '_'], async () => {
     await player.volumeDown(5);
-    updateStatus();
-    log(`Volume: ${player.getVolume()}%`, 'yellow');
+    updatePlayerInfo();
   });
 
   screen.key(['q', 'C-c'], async () => {
-    log('Shutting down...', 'red');
+    log('Shutting down... Goodbye! ♪', 'error');
     await player.stop();
     await player.cleanup();
     process.exit(0);
   });
 
-  // Update status every second
+  // ╔══════════════════════════════════════╗
+  // ║  ANIMATIONS & UPDATES                ║
+  // ╚══════════════════════════════════════╝
+
+  // Update wave animation and status
   setInterval(() => {
-    updateStatus();
-  }, 1000);
+    if (player.getState() === PlayerState.PLAYING) {
+      waveFrame = (waveFrame + 1) % WAVE_FRAMES.length;
+    }
+    updatePlayerInfo();
+  }, 200);
 
   screen.render();
 }
