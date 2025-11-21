@@ -7,8 +7,7 @@ import blessed from 'blessed';
 import { getPlayer } from './player';
 import { getStationManager } from './stations';
 import { PlayerState } from '../types';
-import { enableTUIMode, createLogger } from '../logger';
-
+import { enableTUIMode } from '../logger';
 
 // ASCII Art for lofi vibes
 const LOFI_ASCII = `
@@ -20,7 +19,16 @@ const LOFI_ASCII = `
      ▀▀▀▀▀▀▀▀▀
 `;
 
-const WAVE_FRAMES = ['▁▂▃▄▅▆▇█', '▂▃▄▅▆▇█▁', '▃▄▅▆▇█▁▂', '▄▅▆▇█▁▂▃', '▅▆▇█▁▂▃▄', '▆▇█▁▂▃▄▅', '▇█▁▂▃▄▅▆', '█▁▂▃▄▅▆▇'];
+const WAVE_FRAMES = [
+  '▁▂▃▄▅▆▇█',
+  '▂▃▄▅▆▇█▁',
+  '▃▄▅▆▇█▁▂',
+  '▄▅▆▇█▁▂▃',
+  '▅▆▇█▁▂▃▄',
+  '▆▇█▁▂▃▄▅',
+  '▇█▁▂▃▄▅▆',
+  '█▁▂▃▄▅▆▇',
+];
 
 export async function runTUI(_style = 'rice'): Promise<void> {
   // Enable TUI mode to suppress console logs
@@ -38,6 +46,7 @@ export async function runTUI(_style = 'rice'): Promise<void> {
   const stations = stationManager.getAllStations();
   let currentStationIndex = 0;
   let waveFrame = 0;
+  let lastPlayerState = PlayerState.STOPPED;
 
   // ╔══════════════════════════════════════╗
   // ║  COMPACT RICE-STYLE LAYOUT           ║
@@ -169,7 +178,9 @@ export async function runTUI(_style = 'rice'): Promise<void> {
     // Volume bar
     const volBars = Math.round(volume / 10);
     const volBar = '█'.repeat(volBars) + '░'.repeat(10 - volBars);
-    const volDisplay = isMuted ? '{red-fg}🔇 MUTED{/}' : `{cyan-fg}🔊 ${volBar}{/} {bold}${volume}%{/bold}`;
+    const volDisplay = isMuted
+      ? '{red-fg}🔇 MUTED{/}'
+      : `{cyan-fg}🔊 ${volBar}{/} {bold}${volume}%{/bold}`;
 
     // Wave animation
     const wave = state === PlayerState.PLAYING ? WAVE_FRAMES[waveFrame] : '▁▁▁▁▁▁▁▁';
@@ -189,7 +200,8 @@ export async function runTUI(_style = 'rice'): Promise<void> {
    * Update controls display (compact)
    */
   function updateControls(): void {
-    const controls = '{center}{green-fg}[SPACE]{/} Play/Pause  {green-fg}[N]{/} Next  {green-fg}[P]{/} Prev  {green-fg}[M]{/} Mute  {green-fg}[+/-]{/} Vol  {red-fg}[Q]{/} Quit{/center}';
+    const controls =
+      '{center}{green-fg}[SPACE]{/} Play/Pause  {green-fg}[N]{/} Next  {green-fg}[P]{/} Prev  {green-fg}[M]{/} Mute  {green-fg}[+/-]{/} Vol  {red-fg}[Q]{/} Quit{/center}';
     controlsBox.setContent(controls);
     screen.render();
   }
@@ -197,7 +209,10 @@ export async function runTUI(_style = 'rice'): Promise<void> {
   /**
    * Log message to log box (with colors)
    */
-  function log(message: string, type: 'info' | 'success' | 'warn' | 'error' = 'info'): void {
+  function log(
+    message: string,
+    type: 'info' | 'success' | 'warn' | 'error' = 'info'
+  ): void {
     const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false });
     let color = 'magenta';
 
@@ -310,12 +325,22 @@ export async function runTUI(_style = 'rice'): Promise<void> {
   // ║  ANIMATIONS & UPDATES                ║
   // ╚══════════════════════════════════════╝
 
-  // Update wave animation and status
+  // Update wave animation and status - optimized to reduce unnecessary re-renders
   setInterval(() => {
-    if (player.getState() === PlayerState.PLAYING) {
+    const currentState = player.getState();
+    const stateChanged = currentState !== lastPlayerState;
+
+    // Only update wave animation when playing
+    if (currentState === PlayerState.PLAYING) {
       waveFrame = (waveFrame + 1) % WAVE_FRAMES.length;
+      // Always update during playback for smooth animation
+      updatePlayerInfo();
+    } else if (stateChanged) {
+      // Update only when state changes (stopped/paused/etc)
+      updatePlayerInfo();
     }
-    updatePlayerInfo();
+
+    lastPlayerState = currentState;
   }, 200);
 
   screen.render();
