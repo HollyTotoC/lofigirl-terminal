@@ -255,7 +255,13 @@ def setup(force: bool) -> None:
 
 
 @cli.command()
-def tui() -> None:
+@click.option(
+    "--style",
+    type=click.Choice(["rice", "classic"]),
+    default="rice",
+    help="TUI style (rice=compact btop-style, classic=original)",
+)
+def tui(style: str) -> None:
     """
     🎨 Launch the interactive TUI (Terminal User Interface).
 
@@ -264,6 +270,10 @@ def tui() -> None:
     - Audio waveform visualization
     - Playback controls
     - Keyboard shortcuts
+
+    Styles:
+        rice    - Compact, btop-inspired design (default)
+        classic - Original full TUI design
 
     Keyboard shortcuts:
         SPACE    - Play/Pause
@@ -275,16 +285,27 @@ def tui() -> None:
         Y        - Open in YouTube
         Q        - Quit
 
-    Example:
-        lofigirl tui
+    Examples:
+        lofigirl tui              # Use rice style (default)
+        lofigirl tui --style rice # Compact btop-style
+        lofigirl tui --style classic # Original style
     """
     try:
-        from lofigirl_terminal.tui import run_tui
+        if style == "rice":
+            from lofigirl_terminal.tui_rice import run_rice_tui
 
-        console.print("\n[cyan]🎵 Starting LofiGirl TUI...[/cyan]\n")
-        console.print("[dim]Press 'q' to quit, '?' for help[/dim]\n")
+            console.print("\n[cyan]🎵 Starting LofiGirl TUI (Rice Edition)...[/cyan]\n")
+            console.print("[dim]Compact btop-style interface[/dim]")
+            console.print("[dim]Press 'q' to quit[/dim]\n")
 
-        run_tui()
+            run_rice_tui()
+        else:
+            from lofigirl_terminal.tui import run_tui
+
+            console.print("\n[cyan]🎵 Starting LofiGirl TUI (Classic)...[/cyan]\n")
+            console.print("[dim]Press 'q' to quit, '?' for help[/dim]\n")
+
+            run_tui()
 
     except ImportError as e:
         console.print(
