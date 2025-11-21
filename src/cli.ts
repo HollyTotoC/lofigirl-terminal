@@ -10,6 +10,11 @@ import { getConfig } from './config';
 import { getStationManager } from './modules/stations';
 import { getPlayer } from './modules/player';
 import { createLogger } from './logger';
+import {
+  checkYouTubeExtractor,
+  checkMPV,
+  getInstallInstructions,
+} from './utils/dependencies';
 
 const logger = createLogger('cli');
 const VERSION = '0.2.0';
@@ -197,6 +202,54 @@ export function createCLI(): Command {
       console.log(`${chalk.bold('Description:')} ${station.description}`);
       console.log(`${chalk.bold('URL:')} ${chalk.dim(station.url)}`);
       console.log();
+    });
+
+  /**
+   * CHECK command
+   */
+  program
+    .command('check')
+    .description('🔍 Check if all required dependencies are installed')
+    .action(() => {
+      console.log(chalk.cyan.bold('\n🔍 Checking dependencies...\n'));
+
+      const mpvCheck = checkMPV();
+      const ytCheck = checkYouTubeExtractor();
+
+      const table = new Table({
+        head: [chalk.magenta.bold('Dependency'), chalk.magenta.bold('Status')],
+        colWidths: [30, 20],
+        style: {
+          head: [],
+          border: ['gray'],
+        },
+      });
+
+      table.push(
+        [
+          'MPV media player',
+          mpvCheck ? chalk.green.bold('✓ Installed') : chalk.red.bold('✗ Missing'),
+        ],
+        [
+          'yt-dlp/youtube-dl',
+          ytCheck.available
+            ? chalk.green.bold(`✓ ${ytCheck.extractor}`)
+            : chalk.red.bold('✗ Missing'),
+        ]
+      );
+
+      console.log(table.toString());
+
+      if (!mpvCheck || !ytCheck.available) {
+        console.log(chalk.yellow(getInstallInstructions()));
+      } else {
+        console.log(
+          chalk.green.bold(
+            '\n✅ All dependencies are installed! You can use LofiGirl Terminal.\n'
+          )
+        );
+        console.log(chalk.dim('Start with: lofigirl tui\n'));
+      }
     });
 
   /**
