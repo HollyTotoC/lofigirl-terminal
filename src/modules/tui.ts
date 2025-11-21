@@ -240,6 +240,10 @@ export async function runTUI(): Promise<void> {
    * Load and play current station
    */
   async function playCurrentStation(): Promise<void> {
+    if (!stations || stations.length === 0) {
+      log('No stations available to play.', 'error');
+      return;
+    }
     const station = stations[currentStationIndex];
     try {
       log(`Loading ${station.name}...`, 'info');
