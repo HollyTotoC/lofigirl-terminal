@@ -225,11 +225,11 @@ export async function runTUI(): Promise<void> {
     const wave = state === PlayerState.PLAYING ? WAVE_FRAMES[waveFrame] : '▁▁▁▁▁▁▁▁';
 
     const content = `
- {center}{bold}{magenta-fg}╭─────────────────────────────────────────╮{/}{/bold}{/center}
- {center}{bold}{magenta-fg}${station.name}{/}{/bold}{/center}
- {center}{white-fg}${station.genre} • ${station.description}{/}{/center}
- {center}${stateDisplay}  │  ${volDisplay}{/center}
- {center}{cyan-fg}${wave}{/}{/center}`;
+{center}{bold}{magenta-fg}╭─────────────────────────────────────────╮{/}{/bold}{/center}
+{center}{bold}{magenta-fg}${station.name}{/}{/bold}{/center}
+{center}{white-fg}${station.genre} • ${station.description}{/}{/center}
+{center}${stateDisplay}  │  ${volDisplay}{/center}
+{center}{cyan-fg}${wave}{/}{/center}`;
 
     playerBox.setContent(content);
     screen.render();
