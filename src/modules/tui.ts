@@ -160,6 +160,11 @@ export async function runTUI(): Promise<void> {
    * Update player info display (compact)
    */
   function updatePlayerInfo(): void {
+    if (stations.length === 0) {
+      playerInfoBox.setContent('{center}{red-fg}No stations available.{/red-fg}{/center}');
+      screen.render();
+      return;
+    }
     const station = stations[currentStationIndex];
     const state = player.getState();
     const volume = player.getVolume();
