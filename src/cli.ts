@@ -263,7 +263,7 @@ export function createCLI(): Command {
       'TUI style (rice=compact btop-style, classic=original)',
       'rice'
     )
-    .action(async (options) => {
+    .action(async (_options) => {
       console.log(
         boxen(
           `${chalk.cyan.bold('🎵 Starting LofiGirl TUI')}\n\n${chalk.dim('Compact btop-style interface')}\n${chalk.dim("Press 'q' to quit")}`,
@@ -274,7 +274,7 @@ export function createCLI(): Command {
       try {
         // Import TUI dynamically
         const { runTUI } = await import('./modules/tui');
-        await runTUI(options.style);
+        await runTUI();
       } catch (error) {
         console.log(
           chalk.red.bold('Error: Failed to start TUI\n') +

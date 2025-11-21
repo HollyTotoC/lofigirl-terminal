@@ -193,9 +193,7 @@ export async function runTUI(): Promise<void> {
    */
   function updatePlayerInfo(): void {
     if (stations.length === 0) {
-      playerInfoBox.setContent(
-        '{center}{red-fg}No stations available.{/red-fg}{/center}'
-      );
+      playerBox.setContent('{center}{red-fg}No stations available.{/red-fg}{/center}');
       screen.render();
       return;
     }
