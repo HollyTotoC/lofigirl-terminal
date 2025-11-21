@@ -168,7 +168,7 @@ export async function runTUI(_style = 'rice'): Promise<void> {
     }
 
     // Volume bar
-    const volBars = Math.floor(volume / 10);
+    const volBars = Math.round(volume / 10);
     const volBar = '█'.repeat(volBars) + '░'.repeat(10 - volBars);
     const volDisplay = isMuted ? '{red-fg}🔇 MUTED{/}' : `{cyan-fg}🔊 ${volBar}{/} {bold}${volume}%{/bold}`;
 
