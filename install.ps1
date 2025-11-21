@@ -272,7 +272,7 @@ if (Test-Path $mpvPath) {
     $aliasLine = "Set-Alias -Name lofigirl -Value '$launcherPath'"
     $profileContent = Get-Content $PROFILE -ErrorAction SilentlyContinue
 
-    if ($profileContent -notcontains $aliasLine) {
+    if (-not ($profileContent | Select-String -Pattern 'Set-Alias\s+-Name\s+lofigirl')) {
         Add-Content -Path $PROFILE -Value "`n# LofiGirl Terminal"
         Add-Content -Path $PROFILE -Value $aliasLine
         Write-Success "Added alias to PowerShell profile"
