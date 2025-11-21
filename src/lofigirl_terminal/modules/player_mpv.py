@@ -107,6 +107,10 @@ class MPVPlayer:
                 "cache_secs": 30,
                 "demuxer_max_bytes": "50M",
                 "demuxer_max_back_bytes": "30M",
+                # Silence output to prevent UI interference
+                "terminal": False,  # Don't use terminal output
+                "msg_level": "all=no",  # Disable all messages
+                "quiet": True,  # Quiet mode
             }
 
             if not self.is_video_mode:
