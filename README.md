@@ -3,7 +3,7 @@
 <div align="center">
 
 [![CI](https://github.com/HollyTotoC/lofigirl-terminal/workflows/CI/badge.svg)](https://github.com/HollyTotoC/lofigirl-terminal/actions)
-[![Node.js 14+](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen.svg)](https://nodejs.org/)
+[![Node.js 16+](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Cross-Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](https://github.com/HollyTotoC/lofigirl-terminal)
@@ -73,7 +73,7 @@ Native support for PowerShell (Windows), Terminal (Mac/Linux)! 🎧
 
 ### Prerequisites
 
-- **Node.js 14+** (LTS recommended) - [Download](https://nodejs.org/)
+- **Node.js 16+** (LTS recommended) - [Download](https://nodejs.org/)
 - **npm** (comes with Node.js)
 - **MPV media player** (for audio playback)
 - **Git**
