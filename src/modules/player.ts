@@ -67,7 +67,7 @@ export class MPVPlayer {
         time_update: 1,
         verbose: config.debugMode,
         // Enable YouTube support via yt-dlp/youtube-dl
-        'ytdl': true,
+        ytdl: true,
         'ytdl-format': 'bestaudio',
       };
 
