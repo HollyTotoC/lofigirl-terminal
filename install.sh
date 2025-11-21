@@ -49,14 +49,30 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
+# Find Python command
+find_python() {
+    for cmd in python3 python py; do
+        if command_exists $cmd; then
+            # Verify it's Python 3
+            version=$($cmd --version 2>&1 | grep -oE '[0-9]+\.[0-9]+')
+            major=$(echo $version | cut -d'.' -f1)
+            if [ "$major" = "3" ]; then
+                PYTHON_CMD=$cmd
+                return 0
+            fi
+        fi
+    done
+    return 1
+}
+
 # Check system requirements
 check_requirements() {
     print_info "Checking system requirements..."
 
     # Check Python
-    if command_exists python3; then
-        PYTHON_VERSION=$(python3 --version | cut -d' ' -f2)
-        print_success "Python found: $PYTHON_VERSION"
+    if find_python; then
+        PYTHON_VERSION=$($PYTHON_CMD --version | cut -d' ' -f2)
+        print_success "Python found: $PYTHON_CMD ($PYTHON_VERSION)"
     else
         print_error "Python 3 is not installed"
         print_info "Install Python 3.8+ from: https://www.python.org/"
@@ -136,7 +152,7 @@ create_venv() {
         rm -rf "$VENV_DIR"
     fi
 
-    python3 -m venv "$VENV_DIR"
+    $PYTHON_CMD -m venv "$VENV_DIR"
     print_success "Virtual environment created"
 }
 

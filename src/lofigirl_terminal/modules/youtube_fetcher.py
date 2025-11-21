@@ -85,6 +85,8 @@ class YouTubeFetcher:
                 "yt-dlp",
                 "--get-url",
                 "--no-warnings",
+                "--quiet",  # Suppress output to prevent UI interference
+                "--no-progress",  # Don't show progress bar
             ]
 
             # Add format selector based on preference
@@ -148,6 +150,8 @@ class YouTubeFetcher:
                 "--dump-json",
                 "--no-warnings",
                 "--skip-download",
+                "--quiet",  # Suppress output to prevent UI interference
+                "--no-progress",  # Don't show progress bar
             ]
 
             # Add format selector
