@@ -6,7 +6,7 @@
 import blessed from 'blessed';
 import { getPlayer } from './player';
 import { getStationManager } from './stations';
-import { PlayerState } from '../types';
+import { PlayerState, Station } from '../types';
 import { enableTUIMode } from '../logger';
 
 // ASCII Art for lofi vibes
@@ -189,19 +189,14 @@ export async function runTUI(): Promise<void> {
   }
 
   /**
-   * Update player info display (compact)
+   * Build the player content string
    */
-  function updatePlayerInfo(): void {
-    if (stations.length === 0) {
-      playerBox.setContent('{center}{red-fg}No stations available.{/red-fg}{/center}');
-      screen.render();
-      return;
-    }
-    const station = stations[currentStationIndex];
-    const state = player.getState();
-    const volume = player.getVolume();
-    const isMuted = player.isMuted();
-
+  function buildPlayerContent(
+    station: Station,
+    state: PlayerState,
+    volume: number,
+    isMuted: boolean
+  ): string {
     // State icon with color
     let stateDisplay = '';
     if (state === PlayerState.PLAYING) {
@@ -222,12 +217,29 @@ export async function runTUI(): Promise<void> {
     // Wave animation
     const wave = state === PlayerState.PLAYING ? WAVE_FRAMES[waveFrame] : '▁▁▁▁▁▁▁▁';
 
-    const content = `
+    return `
  {center}{bold}{magenta-fg}╭─────────────────────────────────────────╮{/}{/bold}{/center}
  {center}{bold}{magenta-fg}${station.name}{/}{/bold}{/center}
  {center}{white-fg}${station.genre} • ${station.description}{/}{/center}
  {center}${stateDisplay}  │  ${volDisplay}{/center}
  {center}{cyan-fg}${wave}{/}{/center}`;
+  }
+
+  /**
+   * Update player info display (compact)
+   */
+  function updatePlayerInfo(): void {
+    if (stations.length === 0) {
+      playerBox.setContent('{center}{red-fg}No stations available.{/red-fg}{/center}');
+      screen.render();
+      return;
+    }
+    const station = stations[currentStationIndex];
+    const state = player.getState();
+    const volume = player.getVolume();
+    const isMuted = player.isMuted();
+
+    const content = buildPlayerContent(station, state, volume, isMuted);
 
     playerBox.setContent(content);
     screen.render();
@@ -235,7 +247,7 @@ export async function runTUI(): Promise<void> {
 
   /**
    * Update only the wave animation (optimized for minimal re-rendering)
-   * This avoids re-calculating state, volume, and other UI elements
+   * Uses cached values instead of calling player methods
    */
   function updateWaveAnimation(): void {
     if (stations.length === 0) {
@@ -243,37 +255,8 @@ export async function runTUI(): Promise<void> {
     }
     const station = stations[currentStationIndex];
 
-    // Use cached values from last full update
-    const state = lastPlayerState;
-    const volume = lastVolume;
-    const isMuted = lastMuted;
-
-    // State icon with color (use cached value)
-    let stateDisplay = '';
-    if (state === PlayerState.PLAYING) {
-      stateDisplay = '{green-fg}▶ PLAYING{/}';
-    } else if (state === PlayerState.PAUSED) {
-      stateDisplay = '{yellow-fg}⏸ PAUSED{/}';
-    } else {
-      stateDisplay = '{white-fg}⏹ STOPPED{/}';
-    }
-
-    // Volume bar (use cached value)
-    const volBars = Math.max(0, Math.min(10, Math.floor(volume / 10)));
-    const volBar = '█'.repeat(volBars) + '░'.repeat(10 - volBars);
-    const volDisplay = isMuted
-      ? '{red-fg}🔇 MUTED{/}'
-      : `{cyan-fg}🔊 ${volBar}{/} {bold}${volume}%{/bold}`;
-
-    // Only update wave animation
-    const wave = state === PlayerState.PLAYING ? WAVE_FRAMES[waveFrame] : '▁▁▁▁▁▁▁▁';
-
-    const content = `
- {center}{bold}{magenta-fg}╭─────────────────────────────────────────╮{/}{/bold}{/center}
- {center}{bold}{magenta-fg}${station.name}{/}{/bold}{/center}
- {center}{white-fg}${station.genre} • ${station.description}{/}{/center}
- {center}${stateDisplay}  │  ${volDisplay}{/center}
- {center}{cyan-fg}${wave}{/}{/center}`;
+    // Use cached values from last full update to avoid calling player methods
+    const content = buildPlayerContent(station, lastPlayerState, lastVolume, lastMuted);
 
     playerBox.setContent(content);
     screen.render();

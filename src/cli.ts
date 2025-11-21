@@ -263,7 +263,7 @@ export function createCLI(): Command {
       'TUI style (rice=compact btop-style, classic=original)',
       'rice'
     )
-    .action(async (options) => {
+    .action(async (_options) => {
       console.log(
         boxen(
           `${chalk.cyan.bold('🎵 Starting LofiGirl TUI')}\n\n${chalk.dim('Compact btop-style interface')}\n${chalk.dim("Press 'q' to quit")}`,
