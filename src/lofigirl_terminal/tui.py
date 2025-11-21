@@ -19,13 +19,14 @@ from textual.widgets import Button, Footer, Header, Static
 
 from lofigirl_terminal.config import get_config
 from lofigirl_terminal.logger import get_logger
+from lofigirl_terminal.modules.ascii_art import AsciiArt, get_ascii_art
 from lofigirl_terminal.modules.player_mpv import MPVPlayer, PlayerState
 from lofigirl_terminal.modules.stations import StationManager
 from lofigirl_terminal.modules.themes import ColorPalette, get_theme
 
 logger = get_logger(__name__)
 
-
+# Keep for backwards compatibility
 LOFI_GIRL_ASCII = """
     ⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣴⣶⣾⣿⣷⣶⣦⣤⣀⠀⠀⠀⠀⠀⠀⠀
     ⠀⠀⠀⠀⠀⣠⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣄⠀⠀⠀⠀
@@ -50,31 +51,41 @@ LOFI_GIRL_ASCII = """
 
 class LofiAsciiArt(Static):
     """
-    Animated ASCII art component displaying the Lofi Girl.
+    Animated ASCII art component with dynamic frame cycling.
     """
 
-    def __init__(self, theme: ColorPalette, *args: Any, **kwargs: Any) -> None:
+    def __init__(
+        self, theme: ColorPalette, ascii_art: AsciiArt, *args: Any, **kwargs: Any
+    ) -> None:
         super().__init__(*args, **kwargs)
         self.theme = theme
-        self.frame = 0
+        self.ascii_art = ascii_art
+        self.current_frame = 0
+        self.num_frames = len(ascii_art.frames)
 
     def on_mount(self) -> None:
         """Set up animation when mounted."""
-        self.set_interval(2.0, self.update_animation)
+        # Adjust animation speed based on number of frames
+        interval = 1.0 if self.num_frames > 2 else 2.0
+        self.set_interval(interval, self.update_animation)
 
     def update_animation(self) -> None:
-        """Update the ASCII art animation (simple frame alternation)."""
-        self.frame = (self.frame + 1) % 2
+        """Update the ASCII art animation by cycling through frames."""
+        self.current_frame = (self.current_frame + 1) % self.num_frames
         self.update(self.render_art())
 
     def render_art(self) -> Panel:
-        """Render the ASCII art in a panel."""
-        # Add a subtle animation by alternating between primary and secondary colors
-        color = self.theme.primary if self.frame == 0 else self.theme.secondary
-        text = Text(LOFI_GIRL_ASCII, style=color, justify="center")
+        """Render the ASCII art in a panel with theme colors."""
+        # Use different colors for alternating frames
+        color = (
+            self.theme.primary if self.current_frame % 2 == 0 else self.theme.secondary
+        )
+        text = Text(
+            self.ascii_art.frames[self.current_frame], style=color, justify="center"
+        )
         return Panel(
             Align.center(text),
-            title="🎵 Lofi Girl",
+            title=f"🎵 {self.ascii_art.name}",
             border_style=self.theme.border,
             padding=(1, 2),
         )
@@ -234,18 +245,20 @@ class LofiGirlApp(App):
         super().__init__(*args, **kwargs)
         self.config = get_config()
         self.color_palette: ColorPalette = get_theme(self.config.theme)
+        self.ascii_art: AsciiArt = get_ascii_art(self.config.ascii_art)
         self.station_manager = StationManager()
         self.player: Optional[MPVPlayer] = None
         self.current_station_index = 0
         self.stations = self.station_manager.get_all_stations()
         self.start_time: Optional[datetime] = None
         logger.info(f"Using theme: {self.color_palette.name}")
+        logger.info(f"Using ASCII art: {self.ascii_art.name}")
 
     def compose(self) -> ComposeResult:
         """Create the application layout."""
         yield Header()
 
-        yield LofiAsciiArt(self.color_palette, id="ascii-art")
+        yield LofiAsciiArt(self.color_palette, self.ascii_art, id="ascii-art")
         yield WaveformDisplay(self.color_palette, id="waveform")
         yield StationInfo(self.color_palette, id="station-info")
         yield ControlPanel()

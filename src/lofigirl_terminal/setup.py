@@ -16,6 +16,7 @@ from rich.table import Table
 from rich.text import Text
 
 from lofigirl_terminal.logger import get_logger
+from lofigirl_terminal.modules.ascii_art import ASCII_ARTS
 from lofigirl_terminal.modules.themes import THEMES, get_theme_preview
 
 logger = get_logger(__name__)
@@ -195,13 +196,88 @@ def choose_font() -> Optional[str]:
             console.print("[red]Please enter a valid number[/red]")
 
 
-def save_config(theme: str, font: Optional[str]) -> None:
+def choose_ascii_art() -> str:
+    """
+    Interactive ASCII art selection.
+
+    Returns:
+        Selected ASCII art ID
+    """
+    console.print("\n[bold cyan]Step 3: Choose Your ASCII Art[/bold cyan]\n")
+    console.print("[dim]Select an animated ASCII art for your TUI.[/dim]\n")
+
+    # Create a table showing all ASCII arts
+    table = Table(
+        show_header=True,
+        header_style="bold magenta",
+        border_style="cyan",
+        title="Available ASCII Art",
+        title_style="bold cyan",
+    )
+    table.add_column("#", style="dim", width=3)
+    table.add_column("Name", style="bold")
+    table.add_column("Description", style="dim")
+    table.add_column("Frames", style="dim", width=7)
+
+    art_list = list(ASCII_ARTS.items())
+    for idx, (_art_id, art) in enumerate(art_list, 1):
+        table.add_row(
+            str(idx),
+            art.name,
+            art.description,
+            f"{len(art.frames)} frames",
+        )
+
+    console.print(table)
+    console.print()
+
+    # Get user choice
+    while True:
+        choice = Prompt.ask(
+            "[cyan]Enter ASCII art number[/cyan]",
+            default="1",
+            show_default=True,
+        )
+
+        try:
+            idx = int(choice) - 1
+            if 0 <= idx < len(art_list):
+                selected_art_id, selected_art = art_list[idx]
+
+                # Show preview
+                console.print(f"\n[bold]Preview of {selected_art.name}:[/bold]")
+                console.print(f"[dim]By: {selected_art.author}[/dim]\n")
+
+                # Show first frame
+                preview_panel = Panel(
+                    selected_art.frames[0],
+                    border_style="bright_cyan",
+                    padding=(1, 2),
+                )
+                console.print(preview_panel)
+
+                # Confirm choice
+                if Confirm.ask("\n[cyan]Use this ASCII art?[/cyan]", default=True):
+                    console.print(
+                        f"[green]ASCII art set to [bold]{selected_art.name}[/bold][/green]\n"
+                    )
+                    return selected_art_id
+            else:
+                console.print(
+                    f"[red]Please enter a number between 1 and {len(art_list)}[/red]"
+                )
+        except ValueError:
+            console.print("[red]Please enter a valid number[/red]")
+
+
+def save_config(theme: str, font: Optional[str], ascii_art: str) -> None:
     """
     Save configuration to config file.
 
     Args:
         theme: Selected theme name
         font: Selected font name (or None for default)
+        ascii_art: Selected ASCII art ID
     """
     # Get or create config file path
     config_dir = Path.home() / ".config" / "lofigirl-terminal"
@@ -217,6 +293,7 @@ def save_config(theme: str, font: Optional[str]) -> None:
                 for line in f.readlines()
                 if not line.startswith("THEME=")
                 and not line.startswith("TERMINAL_FONT=")
+                and not line.startswith("ASCII_ART=")
             ]
 
     # Write new config
@@ -231,6 +308,9 @@ def save_config(theme: str, font: Optional[str]) -> None:
         if font:
             f.write("\n# Font configuration\n")
             f.write(f"TERMINAL_FONT={font}\n")
+
+        f.write("\n# ASCII Art configuration\n")
+        f.write(f"ASCII_ART={ascii_art}\n")
 
     console.print(f"[green]Configuration saved to [bold]{config_file}[/bold][/green]\n")
 
@@ -263,9 +343,12 @@ def run_setup(force: bool = False) -> None:
         # Step 2: Choose font
         font = choose_font()
 
+        # Step 3: Choose ASCII art
+        ascii_art = choose_ascii_art()
+
         # Save configuration
         console.print("\n[bold cyan]Saving Configuration[/bold cyan]\n")
-        save_config(theme, font)
+        save_config(theme, font, ascii_art)
 
         # Show success message
         success_panel = Panel(

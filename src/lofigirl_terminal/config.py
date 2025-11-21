@@ -111,6 +111,10 @@ class Config(BaseSettings):
         default=None,
         description="Terminal font name (e.g., 'JetBrainsMono Nerd Font')",
     )
+    ascii_art: str = Field(
+        default="lofi-girl-classic",
+        description="ASCII art ID (lofi-girl-classic, music-notes, vinyl-record, etc.)",
+    )
     show_visualizer: bool = Field(
         default=True,
         description="Show audio visualizer",
