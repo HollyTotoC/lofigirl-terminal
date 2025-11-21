@@ -19,7 +19,7 @@ from textual.widgets import Button, Footer, Header, Label, Static
 from lofigirl_terminal.config import get_config
 from lofigirl_terminal.logger import get_logger
 from lofigirl_terminal.modules.ascii_art import AsciiArt, get_ascii_art
-from lofigirl_terminal.modules.player_mpv import MPVPlayer, PlayerState
+from lofigirl_terminal.modules.player_mpv import MPVPlayer
 from lofigirl_terminal.modules.stations import Station, StationManager
 from lofigirl_terminal.modules.themes import ColorPalette, get_theme
 
@@ -120,9 +120,11 @@ class CompactInfo(Static):
         self.set_interval(1.0, self.update_time)
 
     def update_time(self) -> None:
-        """Update elapsed time."""
-        # This would be connected to the actual player
-        # For now, just increment
+        """Update elapsed time only when playing."""
+        # Only increment time when actually playing
+        if self.state != "▶":
+            return
+
         parts = self.elapsed_time.split(":")
         minutes = int(parts[0])
         seconds = int(parts[1])

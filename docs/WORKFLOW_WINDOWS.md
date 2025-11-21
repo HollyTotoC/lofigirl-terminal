@@ -1,5 +1,7 @@
 # 🪟 Workflow Windows PowerShell - Guide Complet
 
+> **Note**: This is a French language guide. For English documentation, see [WINDOWS_INSTALL.md](WINDOWS_INSTALL.md).
+
 Guide pas-à-pas pour installer et utiliser LofiGirl Terminal sur Windows avec PowerShell uniquement.
 
 ---
