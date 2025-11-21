@@ -39,10 +39,13 @@
     "node": ">=16.0.0"
   },
   "dependencies": {
+    "@types/cheerio": "^0.22.35",
+    "axios": "^1.13.2",
     "blessed": "^0.1.81",
     "blessed-contrib": "^4.11.0",
     "boxen": "^5.1.2",
     "chalk": "^4.1.2",
+    "cheerio": "^1.1.2",
     "cli-table3": "^0.6.3",
     "commander": "^11.1.0",
     "dotenv": "^16.3.1",

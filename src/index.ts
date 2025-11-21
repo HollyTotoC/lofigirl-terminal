@@ -9,9 +9,14 @@
 
 import { runCLI } from './cli';
 import { logger } from './logger';
+import { initializeApp } from './startup';
 
 async function main(): Promise<void> {
   try {
+    // Initialize application (scan YouTube streams, setup stations)
+    await initializeApp();
+
+    // Run CLI
     await runCLI();
   } catch (error) {
     logger.error(`Fatal error: ${error}`);
