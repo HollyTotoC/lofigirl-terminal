@@ -51,7 +51,7 @@ class DynamicConsoleTransport extends winston.transports.Console {
       return;
     }
     // Otherwise, use normal console logging
-    // @ts-ignore - Winston types are inconsistent with callback optionality
+    // @ts-expect-error: Winston's type definitions for ConsoleTransport.log do not allow an optional callback, but at runtime it is optional. Remove this suppression when Winston updates its types.
     super.log(info, callback);
   }
 }
