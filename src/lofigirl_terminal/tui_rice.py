@@ -7,15 +7,12 @@ Features: ASCII art, audio visualization, minimal controls, clean design.
 
 import random
 import webbrowser
-from datetime import datetime
 from typing import Any, Optional
 
-from rich.align import Align
-from rich.panel import Panel
 from rich.text import Text
 from textual import on
 from textual.app import App, ComposeResult
-from textual.containers import Container, Horizontal, Vertical, VerticalScroll
+from textual.containers import Horizontal, VerticalScroll
 from textual.reactive import reactive
 from textual.widgets import Button, Footer, Header, Label, Static
 
