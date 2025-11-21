@@ -12,9 +12,7 @@ dotenv.config();
 // Configuration schema with validation
 const ConfigSchema = z.object({
   appName: z.string().default('LofiGirl Terminal'),
-  logLevel: z
-    .enum(['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'])
-    .default('INFO'),
+  logLevel: z.enum(['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']).default('INFO'),
   defaultVolume: z.number().min(0).max(100).default(50),
   audioQuality: z.enum(['low', 'medium', 'high']).default('high'),
   defaultStation: z.string().default('lofi-hip-hop'),

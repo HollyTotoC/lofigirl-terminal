@@ -11,6 +11,7 @@ const logger = createLogger('player');
 const config = getConfig();
 
 export class MPVPlayer {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private mpvPlayer: any;
   private state: PlayerState;
   private volume: number;
@@ -40,6 +41,7 @@ export class MPVPlayer {
     try {
       logger.debug('Initializing mpv instance...');
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mpvOptions: any = {
         audio_only: !this.isVideoMode,
         time_update: 1,

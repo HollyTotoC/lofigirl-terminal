@@ -6,12 +6,9 @@
 import blessed from 'blessed';
 import { getPlayer } from './player';
 import { getStationManager } from './stations';
-import { PlayerState, Station } from '../types';
-import { createLogger } from '../logger';
+import { PlayerState } from '../types';
 
-const logger = createLogger('tui');
-
-export async function runTUI(style = 'rice'): Promise<void> {
+export async function runTUI(_style = 'rice'): Promise<void> {
   // Create screen
   const screen = blessed.screen({
     smartCSR: true,
@@ -147,11 +144,7 @@ export async function runTUI(style = 'rice'): Promise<void> {
     const state = player.getState();
     const volume = player.getVolume();
     const stateIcon =
-      state === PlayerState.PLAYING
-        ? '▶️'
-        : state === PlayerState.PAUSED
-        ? '⏸️'
-        : '⏹️';
+      state === PlayerState.PLAYING ? '▶️' : state === PlayerState.PAUSED ? '⏸️' : '⏹️';
 
     statusBox.setContent(
       `{center}Status: {bold}${stateIcon} ${state.toUpperCase()}{/bold}  |  Volume: {bold}${volume}%{/bold}{/center}`
@@ -196,8 +189,7 @@ export async function runTUI(style = 'rice'): Promise<void> {
    * Previous station
    */
   async function previousStation(): Promise<void> {
-    currentStationIndex =
-      (currentStationIndex - 1 + stations.length) % stations.length;
+    currentStationIndex = (currentStationIndex - 1 + stations.length) % stations.length;
     await player.stop();
     await playCurrentStation();
   }
@@ -215,10 +207,7 @@ export async function runTUI(style = 'rice'): Promise<void> {
     } else {
       await player.togglePause();
       updateStatus();
-      log(
-        player.isPlaying() ? 'Resumed playback' : 'Paused playback',
-        'yellow'
-      );
+      log(player.isPlaying() ? 'Resumed playback' : 'Paused playback', 'yellow');
     }
   });
 

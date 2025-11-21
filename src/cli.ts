@@ -56,12 +56,8 @@ export function createCLI(): Command {
         // Get the station
         const station = stationManager.getStation(stationId);
         if (!station) {
-          console.log(
-            chalk.red.bold(`Error: Station '${stationId}' not found`)
-          );
-          console.log(
-            chalk.dim("\nUse 'lofigirl list' to see available stations")
-          );
+          console.log(chalk.red.bold(`Error: Station '${stationId}' not found`));
+          console.log(chalk.dim("\nUse 'lofigirl list' to see available stations"));
           process.exit(1);
         }
 
@@ -191,9 +187,7 @@ export function createCLI(): Command {
       const station = stationManager.getStation(options.station);
 
       if (!station) {
-        console.log(
-          chalk.red.bold(`Error: Station '${options.station}' not found`)
-        );
+        console.log(chalk.red.bold(`Error: Station '${options.station}' not found`));
         process.exit(1);
       }
 
@@ -231,9 +225,7 @@ export function createCLI(): Command {
       } catch (error) {
         console.log(
           chalk.red.bold('Error: Failed to start TUI\n') +
-            chalk.yellow(
-              'Make sure all dependencies are installed: npm install'
-            )
+            chalk.yellow('Make sure all dependencies are installed: npm install')
         );
         logger.error(`Failed to start TUI: ${error}`);
         process.exit(1);
