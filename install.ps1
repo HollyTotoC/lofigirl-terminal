@@ -9,11 +9,14 @@ $ErrorActionPreference = "Stop"
 # Colors
 function Write-ColorOutput($ForegroundColor) {
     $fc = $host.UI.RawUI.ForegroundColor
-    $host.UI.RawUI.ForegroundColor = $ForegroundColor
-    if ($args) {
-        Write-Output $args
+    try {
+        $host.UI.RawUI.ForegroundColor = $ForegroundColor
+        if ($args) {
+            Write-Output $args
+        }
+    } finally {
+        $host.UI.RawUI.ForegroundColor = $fc
     }
-    $host.UI.RawUI.ForegroundColor = $fc
 }
 
 function Write-Info($msg) {
