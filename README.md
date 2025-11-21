@@ -64,8 +64,10 @@ irm https://raw.githubusercontent.com/HollyTotoC/lofigirl-terminal/main/install.
 
 **⚠️ Important**: If you get a `libmpv-2.dll` error, see the [Windows Installation Guide](docs/WINDOWS_INSTALL.md) for a quick fix.
 
+**📖 Complete Windows Workflow**: For daily usage, see the [Windows Workflow Guide](docs/WINDOWS_WORKFLOW.md).
+
 <details>
-<summary>Why this happens and how to fix it</summary>
+<summary>Why libmpv-2.dll is needed and how to fix it</summary>
 
 Chocolatey's MPV package includes `mpv.exe` but not `libmpv-2.dll` which Python needs. Quick fix:
 
