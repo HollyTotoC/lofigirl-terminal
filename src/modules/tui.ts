@@ -45,7 +45,7 @@ export async function runTUI(_style = 'rice'): Promise<void> {
     top: 3,
     left: 'center',
     width: '90%',
-    height: 6,
+    height: 5,
     tags: true,
     border: {
       type: 'line',
@@ -59,7 +59,7 @@ export async function runTUI(_style = 'rice'): Promise<void> {
 
   // Controls box
   const controlsBox = blessed.box({
-    top: 9,
+    top: 8,
     left: 'center',
     width: '90%',
     height: 5,
@@ -78,7 +78,7 @@ export async function runTUI(_style = 'rice'): Promise<void> {
 
   // Status box
   const statusBox = blessed.box({
-    top: 14,
+    top: 13,
     left: 'center',
     width: '90%',
     height: 4,
@@ -95,7 +95,7 @@ export async function runTUI(_style = 'rice'): Promise<void> {
 
   // Log box
   const logBox = blessed.log({
-    top: 18,
+    top: 17,
     left: 'center',
     width: '90%',
     height: 8,
@@ -131,7 +131,6 @@ export async function runTUI(_style = 'rice'): Promise<void> {
     const station = stations[currentStationIndex];
     stationBox.setContent(
       `{center}{bold}🎧 ${station.name}{/bold}{/center}\n` +
-        `{center}${station.description}{/center}\n` +
         `{center}{dim}Genre: ${station.genre}{/dim}{/center}`
     );
     screen.render();
@@ -172,7 +171,8 @@ export async function runTUI(_style = 'rice'): Promise<void> {
       updateStatus();
       log(`Now playing: ${station.name}`, 'green');
     } catch (error) {
-      log(`Error: ${error}`, 'red');
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      log(`Error: ${errorMessage}`, 'red');
     }
   }
 
