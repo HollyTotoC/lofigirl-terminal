@@ -29,4 +29,5 @@ export interface AppConfig {
   debugMode: boolean;
   showVisualizer: boolean;
   updateInterval: number;
+  youtubeApiKey?: string;
 }

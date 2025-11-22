@@ -20,6 +20,7 @@ const ConfigSchema = z.object({
   debugMode: z.boolean().default(false),
   showVisualizer: z.boolean().default(true),
   updateInterval: z.number().default(1),
+  youtubeApiKey: z.string().optional(),
 });
 
 /**
@@ -36,6 +37,7 @@ export function getConfig(): AppConfig {
     debugMode: process.env.DEBUG_MODE === 'true',
     showVisualizer: process.env.SHOW_VISUALIZER !== 'false',
     updateInterval: parseInt(process.env.UPDATE_INTERVAL || '1', 10),
+    youtubeApiKey: process.env.YOUTUBE_API_KEY,
   };
 
   // Validate and return

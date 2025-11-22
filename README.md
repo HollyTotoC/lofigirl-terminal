@@ -41,7 +41,9 @@ Native support for PowerShell (Windows), Terminal (Mac/Linux)! 🎧
 
 #### 🎵 Audio Streaming
 - 🎧 **Real YouTube Streaming**: Direct integration with official LofiGirl channels
-- 📻 **Multiple Stations**: 4 curated lofi stations (hip-hop, sleep, jazz, study)
+- 🔴 **Auto-Scan Live Streams**: Automatically detects live streams from @LofiGirl channel on startup
+- 📡 **Multiple Scan Methods**: YouTube API, RSS feed, or web scraping (with automatic fallback)
+- 📻 **Dynamic Stations**: Station list updates with current live streams (or uses default stations)
 - 🎛️ **Full Playback Control**: Play, pause, stop, next/previous
 - 🔊 **Volume Management**: Volume control, mute, adjustable levels
 
@@ -264,7 +266,22 @@ DEFAULT_STATION=lofi-hip-hop
 THEME=default               # default, dark, light
 SHOW_VISUALIZER=true
 UPDATE_INTERVAL=1           # seconds
+
+# YouTube Live Stream Scanner (Optional)
+# Provide a YouTube Data API v3 key for reliable live stream detection
+# Without it, the app uses RSS feed or web scraping (may be less reliable)
+YOUTUBE_API_KEY=your_api_key_here
 ```
+
+**Getting a YouTube API Key** (Optional but recommended):
+
+1. Go to [Google Cloud Console](https://console.developers.google.com/)
+2. Create a new project or select an existing one
+3. Enable "YouTube Data API v3"
+4. Create credentials (API key)
+5. Copy the key and add it to your `.env` file
+
+> **Note**: Without an API key, the app will automatically fall back to RSS feed or web scraping methods. If those fail, it will use the default hardcoded stations.
 
 ---
 

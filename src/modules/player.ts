@@ -160,6 +160,7 @@ export class MPVPlayer {
     if (this.state === PlayerState.PAUSED) {
       logger.info('Resuming playback');
       await this.mpvPlayer.resume();
+      this.updateState(PlayerState.PLAYING);
     } else {
       logger.info(`Starting playback: ${this.currentStation.name}`);
       try {
