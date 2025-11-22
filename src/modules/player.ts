@@ -128,13 +128,16 @@ export class MPVPlayer {
           logger.info(
             `Stream stopped unexpectedly, attempting to restart (${this.restartAttempts}/${this.MAX_RESTART_ATTEMPTS})...`
           );
-          setTimeout(() => {
-            if (this.currentStation) {
-              this.play().catch((error) => {
-                logger.error(`Failed to restart stream: ${error.message}`);
-              });
-            }
-          }, 2000 * this.restartAttempts); // exponential backoff
+          setTimeout(
+            () => {
+              if (this.currentStation) {
+                this.play().catch((error) => {
+                  logger.error(`Failed to restart stream: ${error.message}`);
+                });
+              }
+            },
+            Math.pow(2, this.restartAttempts - 1) * 2000
+          ); // exponential backoff: 2s, 4s, 8s
         }
       });
 
@@ -230,9 +233,12 @@ export class MPVPlayer {
     ) {
       logger.info('Stopping playback');
       this.isIntentionalStop = true;
-      await this.mpvPlayer.stop();
-      this.updateState(PlayerState.STOPPED);
-      this.isIntentionalStop = false;
+      try {
+        await this.mpvPlayer.stop();
+        this.updateState(PlayerState.STOPPED);
+      } finally {
+        this.isIntentionalStop = false;
+      }
     }
   }
 
