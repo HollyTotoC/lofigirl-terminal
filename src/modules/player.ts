@@ -19,6 +19,9 @@ export class MPVPlayer {
   private muted: boolean;
   private currentStation: Station | null;
   private isVideoMode: boolean;
+  private isIntentionalStop = false;
+  private restartAttempts = 0;
+  private readonly MAX_RESTART_ATTEMPTS = 3;
 
   constructor(videoMode = false) {
     this.state = PlayerState.STOPPED;
@@ -69,6 +72,15 @@ export class MPVPlayer {
         // Enable YouTube support via yt-dlp/youtube-dl
         ytdl: true,
         'ytdl-format': 'bestaudio',
+        // Stream buffering and caching options for live streams
+        cache: 'yes',
+        'cache-secs': 120,
+        'demuxer-max-bytes': '50M',
+        'demuxer-max-back-bytes': '25M',
+        'network-timeout': 60,
+        // Keep connection alive
+        'keep-open': 'yes',
+        'stream-lavf-o': 'reconnect=1,reconnect_streamed=1,reconnect_delay_max=5',
       };
 
       // Only set ytdl_path if we detected a specific extractor
@@ -91,6 +103,7 @@ export class MPVPlayer {
       // Set up event listeners
       this.mpvPlayer.on('started', () => {
         logger.debug('MPV player started');
+        this.restartAttempts = 0; // Reset on successful start
         this.updateState(PlayerState.PLAYING);
       });
 
@@ -101,7 +114,31 @@ export class MPVPlayer {
 
       this.mpvPlayer.on('stopped', () => {
         logger.debug('MPV player stopped');
+        const wasPlaying = this.state === PlayerState.PLAYING;
         this.updateState(PlayerState.STOPPED);
+
+        // Auto-restart if stream stopped unexpectedly while playing (not intentional stop)
+        if (
+          wasPlaying &&
+          this.currentStation &&
+          !this.isIntentionalStop &&
+          this.restartAttempts < this.MAX_RESTART_ATTEMPTS
+        ) {
+          this.restartAttempts++;
+          logger.info(
+            `Stream stopped unexpectedly, attempting to restart (${this.restartAttempts}/${this.MAX_RESTART_ATTEMPTS})...`
+          );
+          setTimeout(
+            () => {
+              if (this.currentStation) {
+                this.play().catch((error) => {
+                  logger.error(`Failed to restart stream: ${error.message}`);
+                });
+              }
+            },
+            Math.pow(2, this.restartAttempts - 1) * 2000
+          ); // exponential backoff: 2s, 4s, 8s
+        }
       });
 
       this.mpvPlayer.on('timeposition', (time: number) => {
@@ -195,8 +232,13 @@ export class MPVPlayer {
       this.mpvPlayer
     ) {
       logger.info('Stopping playback');
-      await this.mpvPlayer.stop();
-      this.updateState(PlayerState.STOPPED);
+      this.isIntentionalStop = true;
+      try {
+        await this.mpvPlayer.stop();
+        this.updateState(PlayerState.STOPPED);
+      } finally {
+        this.isIntentionalStop = false;
+      }
     }
   }
 

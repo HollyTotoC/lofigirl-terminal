@@ -136,7 +136,6 @@ export async function runTUI(): Promise<void> {
     tags: true,
     style: {
       fg: THEME.primary,
-      bg: THEME.bg,
     },
   });
 
@@ -145,14 +144,13 @@ export async function runTUI(): Promise<void> {
     top: 1,
     left: 0,
     width: '50%',
-    height: 8,
+    height: 7,
     tags: true,
     border: {
       type: 'line',
     },
     style: {
       fg: THEME.fg,
-      bg: THEME.bg,
       border: {
         fg: THEME.border,
       },
@@ -165,14 +163,13 @@ export async function runTUI(): Promise<void> {
     top: 1,
     left: '50%',
     width: '50%',
-    height: 8,
+    height: 7,
     tags: true,
     border: {
       type: 'line',
     },
     style: {
       fg: THEME.secondary,
-      bg: THEME.bg,
       border: {
         fg: THEME.border,
       },
@@ -182,22 +179,21 @@ export async function runTUI(): Promise<void> {
 
   // Station List Box
   const stationListBox = blessed.list({
-    top: 9,
+    top: 8,
     left: 0,
     width: '100%',
-    height: 'shrink',
+    height: Math.min(stations.length + 2, (screen.height as number) - 9), // Limit to available space
     tags: true,
     border: {
       type: 'line',
     },
     style: {
       fg: THEME.fg,
-      bg: THEME.bg,
       border: {
         fg: THEME.border,
       },
       selected: {
-        fg: THEME.bg,
+        fg: THEME.fg,
         bg: THEME.primary,
         bold: true,
       },
@@ -223,7 +219,6 @@ export async function runTUI(): Promise<void> {
     tags: true,
     style: {
       fg: THEME.muted,
-      bg: THEME.bg,
     },
   });
 
