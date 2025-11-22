@@ -19,6 +19,9 @@ export class MPVPlayer {
   private muted: boolean;
   private currentStation: Station | null;
   private isVideoMode: boolean;
+  private isIntentionalStop = false;
+  private restartAttempts = 0;
+  private readonly MAX_RESTART_ATTEMPTS = 3;
 
   constructor(videoMode = false) {
     this.state = PlayerState.STOPPED;
@@ -100,6 +103,7 @@ export class MPVPlayer {
       // Set up event listeners
       this.mpvPlayer.on('started', () => {
         logger.debug('MPV player started');
+        this.restartAttempts = 0; // Reset on successful start
         this.updateState(PlayerState.PLAYING);
       });
 
@@ -113,16 +117,24 @@ export class MPVPlayer {
         const wasPlaying = this.state === PlayerState.PLAYING;
         this.updateState(PlayerState.STOPPED);
 
-        // Auto-restart if stream stopped unexpectedly while playing
-        if (wasPlaying && this.currentStation) {
-          logger.info('Stream stopped unexpectedly, attempting to restart...');
+        // Auto-restart if stream stopped unexpectedly while playing (not intentional stop)
+        if (
+          wasPlaying &&
+          this.currentStation &&
+          !this.isIntentionalStop &&
+          this.restartAttempts < this.MAX_RESTART_ATTEMPTS
+        ) {
+          this.restartAttempts++;
+          logger.info(
+            `Stream stopped unexpectedly, attempting to restart (${this.restartAttempts}/${this.MAX_RESTART_ATTEMPTS})...`
+          );
           setTimeout(() => {
             if (this.currentStation) {
               this.play().catch((error) => {
                 logger.error(`Failed to restart stream: ${error.message}`);
               });
             }
-          }, 2000);
+          }, 2000 * this.restartAttempts); // exponential backoff
         }
       });
 
@@ -217,8 +229,10 @@ export class MPVPlayer {
       this.mpvPlayer
     ) {
       logger.info('Stopping playback');
+      this.isIntentionalStop = true;
       await this.mpvPlayer.stop();
       this.updateState(PlayerState.STOPPED);
+      this.isIntentionalStop = false;
     }
   }
 

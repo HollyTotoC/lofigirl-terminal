@@ -182,7 +182,7 @@ export async function runTUI(): Promise<void> {
     top: 8,
     left: 0,
     width: '100%',
-    height: stations.length + 2, // Height based on number of stations + borders
+    height: Math.min(stations.length + 2, (screen.height as number) - 9), // Limit to available space
     tags: true,
     border: {
       type: 'line',
