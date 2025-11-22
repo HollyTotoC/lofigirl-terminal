@@ -62,9 +62,9 @@ async function scanWithAPI(apiKey: string): Promise<YouTubeVideo[]> {
         status === 403 &&
         (errorCode === 'quotaExceeded' || errorCode === 'dailyLimitExceeded')
       ) {
-        attempt++;
         if (attempt < maxRetries) {
-          const delay = baseDelayMs * Math.pow(2, attempt);
+          attempt++;
+          const delay = baseDelayMs * Math.pow(2, attempt - 1);
           logger.warn(
             `YouTube API quota exceeded (attempt ${attempt}/${maxRetries}). Retrying in ${delay}ms...`
           );
