@@ -36,27 +36,29 @@
     "url": "https://github.com/HollyTotoC/lofigirl-terminal.git"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=20.18.1"
   },
   "dependencies": {
-    "@types/cheerio": "^0.22.35",
     "axios": "^1.13.2",
     "blessed": "^0.1.81",
     "blessed-contrib": "^4.11.0",
     "boxen": "^5.1.2",
     "chalk": "^4.1.2",
-    "cheerio": "^1.1.2",
     "cli-table3": "^0.6.3",
     "commander": "^11.1.0",
     "dotenv": "^16.3.1",
+    "fast-xml-parser": "^5.3.2",
+    "he": "^1.2.0",
     "node-mpv": "^2.0.0-beta.2",
     "ora": "^5.4.1",
+    "string-width": "^8.1.0",
     "winston": "^3.11.0",
     "ytdl-core": "^4.11.5",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/blessed": "^0.1.25",
+    "@types/he": "^1.2.3",
     "@types/node": "^20.19.25",
     "@typescript-eslint/eslint-plugin": "^6.17.0",
     "@typescript-eslint/parser": "^6.17.0",
