@@ -4,44 +4,18 @@
  */
 
 import blessed from 'blessed';
+import stringWidth from 'string-width';
 import { getPlayer } from './player';
 import { getStationManager } from './stations';
 import { PlayerState } from '../types';
-import { enableTUIMode, disableTUIMode } from '../logger';
+import { enableTUIMode, disableTUIMode, createLogger } from '../logger';
+
+const logger = createLogger('tui');
 
 // ═══════════════════════════════════════════════════════════════════════════
-// CATPPUCCIN MOCHA COLOR PALETTE
+// THEME COLORS (Catppuccin Mocha inspired)
 // ═══════════════════════════════════════════════════════════════════════════
-const CATPPUCCIN_MOCHA = {
-  rosewater: '#f5e0dc',
-  flamingo: '#f2cdcd',
-  pink: '#f5c2e7',
-  mauve: '#cba6f7',
-  red: '#f38ba8',
-  maroon: '#eba0ac',
-  peach: '#fab387',
-  yellow: '#f9e2af',
-  green: '#a6e3a1',
-  teal: '#94e2d5',
-  sky: '#89dceb',
-  sapphire: '#74c7ec',
-  blue: '#89b4fa',
-  lavender: '#b4befe',
-  text: '#cdd6f4',
-  subtext1: '#bac2de',
-  subtext0: '#a6adc8',
-  overlay2: '#9399b2',
-  overlay1: '#7f849c',
-  overlay0: '#6c7086',
-  surface2: '#585b70',
-  surface1: '#45475a',
-  surface0: '#313244',
-  base: '#1e1e2e',
-  mantle: '#181825',
-  crust: '#11111b',
-};
-
-// Blessed color mapping (closest matches)
+// Blessed color mapping
 const THEME = {
   bg: 'black', // Closest to base
   fg: 'white', // Closest to text
@@ -59,6 +33,57 @@ const THEME = {
 // WAVE VISUALIZER
 // ═══════════════════════════════════════════════════════════════════════════
 const WAVE_BARS = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// UTF-8 SAFE STRING UTILITIES
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Safely truncate a string to a maximum visual width, handling multi-byte UTF-8 characters
+ * @param str - String to truncate
+ * @param maxWidth - Maximum visual width
+ * @param addEllipsis - Whether to add '...' if truncated
+ * @returns Truncated string
+ */
+function truncateString(str: string, maxWidth: number, addEllipsis = true): string {
+  const width = stringWidth(str);
+  if (width <= maxWidth) {
+    return str;
+  }
+
+  // Truncate character by character until we fit
+  let result = '';
+  let currentWidth = 0;
+  const ellipsisWidth = addEllipsis ? 3 : 0;
+  const targetWidth = maxWidth - ellipsisWidth;
+
+  for (const char of str) {
+    const charWidth = stringWidth(char);
+    if (currentWidth + charWidth > targetWidth) {
+      break;
+    }
+    result += char;
+    currentWidth += charWidth;
+  }
+
+  return addEllipsis ? result + '...' : result;
+}
+
+/**
+ * Pad a string to a specific visual width, handling multi-byte UTF-8 characters
+ * @param str - String to pad
+ * @param width - Target visual width
+ * @param padChar - Character to use for padding (default: space)
+ * @returns Padded string
+ */
+function padString(str: string, width: number, padChar = ' '): string {
+  const currentWidth = stringWidth(str);
+  if (currentWidth >= width) {
+    return str;
+  }
+  const padding = padChar.repeat(width - currentWidth);
+  return str + padding;
+}
 
 function generateWave(width: number, offset: number): string {
   const bars: string[] = [];
@@ -228,7 +253,7 @@ export async function runTUI(): Promise<void> {
 
     // State icon
     let stateIcon = '';
-    let stateColor = THEME.muted;
+    let stateColor;
     if (state === PlayerState.PLAYING) {
       stateIcon = '▶';
       stateColor = THEME.success;
@@ -249,7 +274,7 @@ export async function runTUI(): Promise<void> {
 
     const content = `
   {bold}{${THEME.primary}-fg}${station.name}{/}{/bold}
-  {${THEME.muted}-fg}${station.genre} • ${station.description.substring(0, 40)}...{/}
+  {${THEME.muted}-fg}${station.genre} • ${truncateString(station.description, 40)}{/}
 
   {${stateColor}-fg}${stateIcon} ${state.toUpperCase()}{/}  │  🔊 ${volDisplay}
 `;
@@ -261,7 +286,8 @@ export async function runTUI(): Promise<void> {
     const state = player.getState();
 
     if (state === PlayerState.PLAYING) {
-      const width = (typeof visualizerBox.width === 'number' ? visualizerBox.width : 80) - 4;
+      const width =
+        (typeof visualizerBox.width === 'number' ? visualizerBox.width : 80) - 4;
       const wave1 = generateWave(width, waveOffset);
       const wave2 = generateWave(width, waveOffset + 10);
       const wave3 = generateWave(width, waveOffset + 20);
@@ -275,7 +301,8 @@ export async function runTUI(): Promise<void> {
 `;
       visualizerBox.setContent(content);
     } else {
-      const width = (typeof visualizerBox.width === 'number' ? visualizerBox.width : 80) - 4;
+      const width =
+        (typeof visualizerBox.width === 'number' ? visualizerBox.width : 80) - 4;
       const flatLine = '▁'.repeat(width);
 
       visualizerBox.setContent(`
@@ -291,13 +318,16 @@ export async function runTUI(): Promise<void> {
   function updateStationList(): void {
     const items = stations.map((station, index) => {
       const prefix = index === currentStationIndex ? '►' : ' ';
-      const name = station.name.padEnd(25);
-      return `{${THEME.fg}-fg}${prefix} {bold}${station.id.padEnd(20)}{/bold} ${name}{/}`;
+      const stationId = padString(station.id, 20);
+      const stationName = padString(station.name, 25);
+      return `{${THEME.fg}-fg}${prefix} {bold}${stationId}{/bold} ${stationName}{/}`;
     });
 
     stationListBox.setItems(items);
     stationListBox.select(currentStationIndex);
-    stationListBox.setLabel(` Stations (${currentStationIndex + 1}/${stations.length}) `);
+    stationListBox.setLabel(
+      ` Stations (${currentStationIndex + 1}/${stations.length}) `
+    );
   }
 
   function updateControlsBar(): void {
@@ -308,7 +338,7 @@ export async function runTUI(): Promise<void> {
       `{${THEME.accent}-fg}[M]{/} Mute`,
       `{${THEME.accent}-fg}[+/-]{/} Volume`,
       `{${THEME.error}-fg}[Q]{/} Quit`,
-    ].join(' {${THEME.muted}-fg}│{/} ');
+    ].join(` {${THEME.muted}-fg}│{/} `);
 
     controlsBar.setContent(` ${controls}`);
   }
@@ -334,8 +364,9 @@ export async function runTUI(): Promise<void> {
       await player.loadStation(station);
       await player.play();
       renderAll();
-    } catch (error) {
-      // Error handling would go here
+    } catch (error: any) {
+      logger.error(`Failed to play station ${station.id}: ${error.message}`);
+      // Show error to user (optional: could add a status message box)
     }
   }
 

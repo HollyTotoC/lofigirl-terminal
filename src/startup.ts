@@ -22,7 +22,9 @@ export async function initializeApp(): Promise<void> {
 
     // Scan for live streams
     logger.info('Scanning for live YouTube streams...');
-    const liveStations = await scanLofiGirlLiveStreamsWithFallback(config.youtubeApiKey);
+    const liveStations = await scanLofiGirlLiveStreamsWithFallback(
+      config.youtubeApiKey
+    );
 
     if (liveStations.length > 0) {
       // Initialize with scanned live stations
@@ -31,7 +33,9 @@ export async function initializeApp(): Promise<void> {
 
       // Show info to user if debug mode
       if (config.debugMode) {
-        console.log(chalk.green(`✓ Loaded ${liveStations.length} live streams from @LofiGirl`));
+        console.log(
+          chalk.green(`✓ Loaded ${liveStations.length} live streams from @LofiGirl`)
+        );
         liveStations.forEach((station, index) => {
           console.log(chalk.dim(`  ${index + 1}. ${station.name}`));
         });
