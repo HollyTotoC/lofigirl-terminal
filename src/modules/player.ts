@@ -69,6 +69,15 @@ export class MPVPlayer {
         // Enable YouTube support via yt-dlp/youtube-dl
         ytdl: true,
         'ytdl-format': 'bestaudio',
+        // Stream buffering and caching options for live streams
+        cache: 'yes',
+        'cache-secs': 120,
+        'demuxer-max-bytes': '50M',
+        'demuxer-max-back-bytes': '25M',
+        'network-timeout': 60,
+        // Keep connection alive
+        'keep-open': 'yes',
+        'stream-lavf-o': 'reconnect=1,reconnect_streamed=1,reconnect_delay_max=5',
       };
 
       // Only set ytdl_path if we detected a specific extractor
@@ -101,7 +110,20 @@ export class MPVPlayer {
 
       this.mpvPlayer.on('stopped', () => {
         logger.debug('MPV player stopped');
+        const wasPlaying = this.state === PlayerState.PLAYING;
         this.updateState(PlayerState.STOPPED);
+
+        // Auto-restart if stream stopped unexpectedly while playing
+        if (wasPlaying && this.currentStation) {
+          logger.info('Stream stopped unexpectedly, attempting to restart...');
+          setTimeout(() => {
+            if (this.currentStation) {
+              this.play().catch((error) => {
+                logger.error(`Failed to restart stream: ${error.message}`);
+              });
+            }
+          }, 2000);
+        }
       });
 
       this.mpvPlayer.on('timeposition', (time: number) => {
